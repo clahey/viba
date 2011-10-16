@@ -22,6 +22,7 @@ void
 OutputNote(NoteEvent noteEvent, FluidOutputSequence* output, TimeDelta& offset)
 {
   InstrumentEvent event(noteEvent, offset, &instrument, 100);
+  event = event.Randomize(1.0/1024);
   output->SendInstrumentEvent(&event);
 }
 
@@ -29,6 +30,7 @@ void
 OutputSequenceData(const SequenceData* data, FluidOutputSequence* output, TimeDelta& offset)
 {
   const std::vector<NoteEvent>& notes = dynamic_cast<const NoteSequenceData*>(data)->GetNotes();
+printf ("Offset: %d\n", offset.GetTicks());
   std::for_each(notes.begin(), notes.end(), sigc::bind(sigc::ptr_fun(&OutputNote), output, offset));
   offset += data->GetLength();
 }
@@ -50,7 +52,9 @@ int main(int argc, char* argv[]) {
   const DataSequence* sequence;
 
   sequence = &tune.getIntro();
+  offset = output->GetCurrentTime();
   OutputSequence(output, sequence, offset);
+  printf("length: %d\n", sequence->GetLength().GetTicks());
   offset += sequence->GetLength();
   sequence = &tune.getMain();
   OutputSequence(output, sequence, offset);

@@ -22,7 +22,8 @@ public:
   Note GetNote() { return mNote; };
   TimeDelta GetLength() { return mLength; };
   TimeDelta GetOffset() { return mOffset; };
-private:
+
+protected:
   Note mNote;
   TimeDelta mLength;
   TimeDelta mOffset;

@@ -7,6 +7,8 @@
 
 #include "timeDelta.hh"
 
+#include <cstdio>
+
 const TimeDelta TimeDelta::sBar = 128 * 9 * 5;
 
 TimeDelta::TimeDelta()

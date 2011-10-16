@@ -2,6 +2,8 @@ INCLUDES = $(VIBA_CFLAGS) $(BOOST_CPPFLAGS)
 
 bin_PROGRAMS=viba
 viba_SOURCES=viba.cc \
+	dataSequence.cc \
+	instrumentEvent.cc \
 	instrumentSequenceData.cc \
 	fluidOutputSequence.cc \
 	musician.cc \

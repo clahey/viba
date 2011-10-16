@@ -21,9 +21,7 @@
 class DataSequence : virtual public Sequence
 {
 public:
-  DataSequence(TimeDelta length = 0) : mLength(length) {};
-
-  TimeDelta GetLength() const { return mLength; }
+  TimeDelta GetLength() const;
   std::vector<SequenceData*>& GetData() { return mData; };
   const std::vector<SequenceData*>& GetData() const { return mData; };
 
@@ -31,7 +29,6 @@ public:
 
 private:
   std::vector<SequenceData*> mData;
-  TimeDelta mLength;
 };
 
 #endif /* DATASEQUENCE_HH_ */

@@ -8,6 +8,11 @@
 #ifndef INSTRUMENTEVENT_HH_
 #define INSTRUMENTEVENT_HH_
 
+
+#include <boost/random.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/normal_distribution.hpp>
+
 #include "instrument.hh"
 #include "timeDelta.hh"
 #include "noteEvent.hh"
@@ -25,7 +30,14 @@ public:
 
   Instrument* GetInstrument() { return mInstrument; };
   int GetVelocity() { return mVelocity; };
+
+  InstrumentEvent Randomize(double sigma = 1.0 / 128);
+
 private:
+  typedef boost::variate_generator<boost::mt19937&, 
+				   boost::normal_distribution<> > Generator;
+  static boost::mt19937 mSource;
+  static Generator* mRNG;
   Instrument* mInstrument;
   int mVelocity;
 };

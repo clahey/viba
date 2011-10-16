@@ -68,5 +68,3 @@ FluidOutputSequence::SendInstrumentEvent(InstrumentEvent* event)
     }
     delete_fluid_event(evt);
 }
-
-
