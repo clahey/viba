@@ -16,7 +16,7 @@
 #include <boost/filesystem/path.hpp>
 #include <libxml++/parsers/textreader.h>
 
-#include "tuneSequenceData.hh"
+#include "noteSequenceData.hh"
 
 Tune::Tune()
 {
@@ -47,7 +47,7 @@ Next(xmlpp::TextReader& reader, xmlpp::TextReader::xmlNodeType type = xmlpp::Tex
 }
 
 static bool
-ParseTuneData(Sequence* sequence, const boost::filesystem::path& path, TimeDelta length)
+ParseTuneData(DataSequence* sequence, const boost::filesystem::path& path, TimeDelta length)
 {
   boost::filesystem::ifstream notesFile(path);
   double offset;
@@ -55,7 +55,7 @@ ParseTuneData(Sequence* sequence, const boost::filesystem::path& path, TimeDelta
   std::vector<SequenceData*>& sequenceVector = sequence->GetData();
   int barNum = 0;
   sequenceVector.clear();
-  TuneSequenceData* sequenceData = new TuneSequenceData(length);
+  NoteSequenceData* sequenceData = new NoteSequenceData(length);
   sequenceVector.push_back(sequenceData);
   std::vector<NoteEvent>& notes = sequenceData->GetNotes();
   while(notesFile.good()) {
@@ -103,7 +103,7 @@ Tune::Parse(const Glib::ustring& xmlFile)
 	return false;
       }
       Glib::ustring fileName = reader.get_value();
-      Sequence* sequence;
+      DataSequence* sequence;
       if (section == "intro") {
 	if (part == "melody") {
 	  sequence = &mIntro;

@@ -1,13 +1,13 @@
 /*
- * tuneSequenceData.cc
+ * musician.cc
  *
  *  Created on: Oct 8, 2011
  *      Author: clahey
  */
 
-#include "tuneSequenceData.hh"
+#include "musician.hh"
 
-TuneSequenceData::~TuneSequenceData()
+Musician::~Musician()
 {
   // TODO Auto-generated destructor stub
 }

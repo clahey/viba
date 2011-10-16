@@ -14,6 +14,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-  Tune().Parse(argv[1]);
+  Tune tune;
+  tune.Parse(argv[1]);
   return 0;
 }

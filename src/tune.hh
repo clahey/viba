@@ -10,7 +10,9 @@
 
 #include <glibmm/ustring.h>
 
-#include "sequence.hh"
+#include "dataSequence.hh"
+#include "noteSequenceData.hh"
+#include "songState.hh"
 
 /*
  *
@@ -23,95 +25,97 @@ public:
 
   bool Parse(const Glib::ustring& xmlFile);
 
-  const Sequence & getIntro() const
+  const DataSequence & getIntro() const
   {
     return mIntro;
   }
 
-  const Sequence & getIntroChords() const
+  const DataSequence & getIntroChords() const
   {
     return mIntroChords;
   }
 
-  const Sequence & getMain() const
+  const DataSequence & getMain() const
   {
     return mMain;
   }
 
-  const Sequence & getMainChords() const
+  const DataSequence & getMainChords() const
   {
     return mMainChords;
   }
 
-  const Sequence & getOutro() const
+  const DataSequence & getOutro() const
   {
     return mOutro;
   }
 
-  const Sequence & getOutroChords() const
+  const DataSequence & getOutroChords() const
   {
     return mOutroChords;
   }
 
-  const Sequence & getRepeat() const
+  const DataSequence & getRepeat() const
   {
     return mRepeat;
   }
 
-  const Sequence & getRepeatChords() const
+  const DataSequence & getRepeatChords() const
   {
     return mRepeatChords;
   }
 
-  void setIntro(Sequence intro)
+  void setIntro(DataSequence intro)
   {
     mIntro = intro;
   }
 
-  void setMain(Sequence main)
+  void setMain(DataSequence main)
   {
     mMain = main;
   }
 
-  void setOutro(Sequence outro)
+  void setOutro(DataSequence outro)
   {
     mOutro = outro;
   }
 
-  void setRepeat(Sequence repeat)
+  void setRepeat(DataSequence repeat)
   {
     mRepeat = repeat;
   }
 
-  void setIntroChords(Sequence introChords)
+  void setIntroChords(DataSequence introChords)
   {
     mIntroChords = introChords;
   }
 
-  void setMainChords(Sequence mainChords)
+  void setMainChords(DataSequence mainChords)
   {
     mMainChords = mainChords;
   }
 
-  void setOutroChords(Sequence outroChords)
+  void setOutroChords(DataSequence outroChords)
   {
     mOutroChords = outroChords;
   }
 
-  void setRepeatChords(Sequence repeatChords)
+  void setRepeatChords(DataSequence repeatChords)
   {
     mRepeatChords = repeatChords;
   }
 
+  NoteSequenceData& GetNotes(int bar, const SongState& state);
+
 private:
-  Sequence mIntro;
-  Sequence mMain;
-  Sequence mRepeat;
-  Sequence mOutro;
-  Sequence mIntroChords;
-  Sequence mMainChords;
-  Sequence mRepeatChords;
-  Sequence mOutroChords;
+  DataSequence mIntro;
+  DataSequence mMain;
+  DataSequence mRepeat;
+  DataSequence mOutro;
+  DataSequence mIntroChords;
+  DataSequence mMainChords;
+  DataSequence mRepeatChords;
+  DataSequence mOutroChords;
 };
 
 #endif /* TUNE_HH_ */
