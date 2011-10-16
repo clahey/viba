@@ -28,6 +28,9 @@ public:
   TimeDelta GetCurrentTime();
 private:
   fluid_sequencer_t* mSequencer;
+  int mSequencerBase;
+  TimeDelta mTicksBase;
+  double mBPM;
 };
 
 #endif /* OUTPUTSEQUENCE_HH_ */
