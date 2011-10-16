@@ -18,7 +18,7 @@ class SequenceData
 public:
   SequenceData();
   virtual ~SequenceData();
-  virtual TimeDelta GetLength() = 0;
+  virtual TimeDelta GetLength() const = 0;
 };
 
 #endif /* SEQUENCEDATA_HH_ */

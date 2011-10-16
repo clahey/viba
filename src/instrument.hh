@@ -14,6 +14,7 @@
 class Instrument
 {
 public:
+  Instrument() : mChannel(0) {};
   Instrument(int channel) : mChannel(channel) {};
   int GetChannel() { return mChannel; };
 private:

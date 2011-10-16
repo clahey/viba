@@ -67,7 +67,7 @@ ParseTuneData(DataSequence* sequence, const boost::filesystem::path& path, TimeD
       notesFile.width(10);
       notesFile >> midiNote >> waste >> duration;
       if (notesFile.good()) {
-	notes.push_back(NoteEvent(midiNote, duration, offset));
+	notes.push_back(NoteEvent(midiNote, TimeDelta::sBar * duration, TimeDelta::sBar * offset));
       }
     }
     notesFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');

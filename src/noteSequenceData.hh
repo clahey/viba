@@ -21,7 +21,7 @@ class NoteSequenceData : public SequenceData
 public:
   NoteSequenceData(TimeDelta length) : mLength(length) {};
   virtual ~NoteSequenceData();
-  TimeDelta GetLength() { return mLength; }
+  TimeDelta GetLength() const { return mLength; }
   std::vector<NoteEvent>& GetNotes() { return mNotes; };
   const std::vector<NoteEvent>& GetNotes() const { return mNotes; };
 private:

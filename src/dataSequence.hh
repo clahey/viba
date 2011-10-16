@@ -23,7 +23,7 @@ class DataSequence : virtual public Sequence
 public:
   DataSequence(TimeDelta length = 0) : mLength(length) {};
 
-  TimeDelta GetLength() { return mLength; }
+  TimeDelta GetLength() const { return mLength; }
   std::vector<SequenceData*>& GetData() { return mData; };
   const std::vector<SequenceData*>& GetData() const { return mData; };
 

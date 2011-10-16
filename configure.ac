@@ -12,7 +12,7 @@ AC_PROG_CXX
 AX_BOOST_BASE
 AX_BOOST_FILESYSTEM
 
-PKG_CHECK_MODULES([VIBA], [glibmm-2.4 libxml++-2.6 fluidsynth])
+PKG_CHECK_MODULES([VIBA], [glibmm-2.4 libxml++-2.6 fluidsynth sigc++-2.0])
 
 AC_CONFIG_FILES(Makefile src/Makefile)
 AC_OUTPUT

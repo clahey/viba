@@ -21,7 +21,7 @@ class InstrumentSequenceData : public SequenceData
 public:
   InstrumentSequenceData(TimeDelta length) : mLength(length) {};
   virtual ~InstrumentSequenceData();
-  TimeDelta GetLength() { return mLength; }
+  TimeDelta GetLength() const { return mLength; }
   std::vector<InstrumentEvent>& GetEvents() { return mEvents; };
   const std::vector<InstrumentEvent>& GetEvents() const { return mEvents; };
 private:

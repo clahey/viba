@@ -20,7 +20,7 @@ class Sequence
 {
 public:
   virtual ~Sequence() {};
-  virtual TimeDelta GetLength() = 0;
+  virtual TimeDelta GetLength() const = 0;
   virtual void ForgetBefore(TimeDelta timeStamp) {};
 };
 
