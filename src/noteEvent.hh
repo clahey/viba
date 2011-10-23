@@ -18,10 +18,11 @@ class NoteEvent
 {
 public:
   NoteEvent(Note note, TimeDelta length, TimeDelta offset) : mNote(note), mLength(length), mOffset(offset) {};
+  NoteEvent(NoteEvent event, TimeDelta offset) : mNote(event.mNote), mLength(event.mLength), mOffset(event.mOffset + offset) {};
 
-  Note GetNote() { return mNote; };
-  TimeDelta GetLength() { return mLength; };
-  TimeDelta GetOffset() { return mOffset; };
+  Note GetNote() const { return mNote; };
+  TimeDelta GetLength() const { return mLength; };
+  TimeDelta GetOffset() const { return mOffset; };
 
 protected:
   Note mNote;

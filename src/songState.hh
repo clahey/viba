@@ -9,9 +9,12 @@
 #ifndef SONGSTATE_HH_
 #define SONGSTATE_HH_
 
-class SongState
+struct SongState
 {
-  int lastTime;
+  bool mLastTime;
+  bool operator< (const SongState& other) const {
+    return !mLastTime && other.mLastTime;
+  }
 };
 
 #endif /* SONGSTATE_HH_ */

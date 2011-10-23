@@ -19,14 +19,15 @@
 class NoteSequenceData : public SequenceData
 {
 public:
+  typedef std::vector<NoteEvent> SequenceType;
   NoteSequenceData(TimeDelta length) : mLength(length) {};
   virtual ~NoteSequenceData();
   TimeDelta GetLength() const { return mLength; }
-  std::vector<NoteEvent>& GetNotes() { return mNotes; };
-  const std::vector<NoteEvent>& GetNotes() const { return mNotes; };
+  SequenceType& GetNotes() { return mNotes; };
+  const SequenceType& GetNotes() const { return mNotes; };
 private:
   TimeDelta mLength;
-  std::vector<NoteEvent> mNotes;
+  SequenceType mNotes;
 };
 
 #endif /* NOTESEQUENCEDATA_HH_ */

@@ -16,10 +16,10 @@ InstrumentEvent::Randomize(double sigma)
     mRNG = new Generator(mSource, boost::normal_distribution<>());
   }
   InstrumentEvent retval = *this;
-  TimeDelta startOffset = TimeDelta::sBar * ((*mRNG)() * sigma);
+  //  TimeDelta startOffset = TimeDelta::sBar * ((*mRNG)() * sigma);
   TimeDelta endOffset = TimeDelta::sBar * ((*mRNG)() * sigma);
-  printf("%d, %d\n", startOffset.GetTicks(), endOffset.GetTicks());
-  retval.mOffset += startOffset;
-  retval.mLength += endOffset - startOffset;
+  //  printf("%d, %d\n", startOffset.GetTicks(), endOffset.GetTicks());
+  //  retval.mOffset += startOffset;
+  retval.mLength += endOffset;// - startOffset;
   return retval;
 }

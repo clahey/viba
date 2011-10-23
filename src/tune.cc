@@ -9,6 +9,7 @@
 
 #define BOOST_FILESYSTEM_VERSION 3
 
+#include <assert.h>
 #include <cstdlib>
 #include <iostream>
 #include <limits>
@@ -17,6 +18,8 @@
 #include <libxml++/parsers/textreader.h>
 
 #include "noteSequenceData.hh"
+
+NoteSequenceData Tune::sEmptyBar(TimeDelta::sBar);
 
 Tune::Tune()
 {
@@ -152,4 +155,78 @@ Tune::Parse(const Glib::ustring& xmlFile)
     }
   }
   return true;
+}
+
+static void
+Fill(NoteSequenceData& output,
+     const NoteEvent& input,
+     TimeDelta& location)
+{
+  output.GetNotes().push_back(NoteEvent(input, location));
+}
+
+static void
+Fill(std::vector<NoteSequenceData>& output,
+     const NoteEvent& input,
+     TimeDelta& location)
+{
+  TimeDelta offset = input.GetOffset() + location;
+  int bar = static_cast<int>(offset / TimeDelta::sBar);
+  while (output.size() <= bar) {
+    output.push_back(NoteSequenceData(TimeDelta::sBar));
+  }
+  output[bar].GetNotes().push_back(NoteEvent(input, location - TimeDelta::sBar * bar));
+}
+
+template<class OutputType>
+static void
+Fill(OutputType& output,
+     const NoteSequenceData& input,
+     TimeDelta& location)
+{
+  const NoteSequenceData::SequenceType& sequence = input.GetNotes();
+  NoteSequenceData::SequenceType::const_iterator it;
+  for (it = sequence.begin(); it != sequence.end(); it++) {
+    Fill(output, *it, location);
+  }
+  location += input.GetLength();
+}
+
+template<class OutputType>
+static void
+Fill(OutputType& output,
+     const DataSequence& input,
+     TimeDelta& location)
+{
+  const DataSequence::SequenceType& sequence = input.GetData();
+  DataSequence::SequenceType::const_iterator it;
+  for (it = sequence.begin(); it != sequence.end(); it++) {
+    Fill(output, *dynamic_cast<NoteSequenceData*>(*it), location);
+  }
+}
+
+NoteSequenceData&
+Tune::GetNotes(int bar, const SongState& state)
+{
+  if (mNotesCache.find(state) == mNotesCache.end()) {
+    TimeDelta current = 0;
+    mNotesCache[state].intro = new NoteSequenceData(mIntro.GetLength());
+    Fill(*mNotesCache[state].intro, mIntro, current);
+    current = 0;
+    Fill(mNotesCache[state].bars, mMain, current);
+    if (state.mLastTime) {
+      Fill(mNotesCache[state].bars, mOutro, current);
+    } else {
+      Fill(mNotesCache[state].bars, mRepeat, current);
+    }
+    assert(mNotesCache[state].intro != NULL);
+  }
+  if (bar < 0) {
+    return *mNotesCache[state].intro;
+  } else {
+    if (mNotesCache[state].bars.size() > bar) {
+      return mNotesCache[state].bars[bar];
+    }
+  }
+  return sEmptyBar;
 }

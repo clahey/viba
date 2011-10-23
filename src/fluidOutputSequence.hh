@@ -30,6 +30,7 @@ public:
   bool SendInstrumentEvent(InstrumentEvent* event);
 
 private:
+  FluidOutputSequence(const FluidOutputSequence& other) {};
   static const int sSPerM = 60;
   static const int sMSPerS = 1000;
   static const int sBeatsPerBar = 2;

@@ -21,14 +21,15 @@
 class DataSequence : virtual public Sequence
 {
 public:
+  typedef std::vector<SequenceData*> SequenceType;
   TimeDelta GetLength() const;
-  std::vector<SequenceData*>& GetData() { return mData; };
-  const std::vector<SequenceData*>& GetData() const { return mData; };
+  SequenceType& GetData() { return mData; };
+  const SequenceType& GetData() const { return mData; };
 
   void ForgetBefore(TimeDelta timeStamp) {};
 
 private:
-  std::vector<SequenceData*> mData;
+  SequenceType mData;
 };
 
 #endif /* DATASEQUENCE_HH_ */

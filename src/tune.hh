@@ -9,6 +9,7 @@
 #define TUNE_HH_
 
 #include <glibmm/ustring.h>
+#include <map>
 
 #include "dataSequence.hh"
 #include "noteSequenceData.hh"
@@ -108,6 +109,7 @@ public:
   NoteSequenceData& GetNotes(int bar, const SongState& state);
 
 private:
+  static NoteSequenceData sEmptyBar;
   DataSequence mIntro;
   DataSequence mMain;
   DataSequence mRepeat;
@@ -116,6 +118,14 @@ private:
   DataSequence mMainChords;
   DataSequence mRepeatChords;
   DataSequence mOutroChords;
+  struct NotesCacheData {
+    NotesCacheData() : intro(NULL) {};
+    ~NotesCacheData() { delete intro; }
+    std::vector<NoteSequenceData> bars;
+    NoteSequenceData* intro;
+  };
+  typedef std::map<SongState, NotesCacheData> NotesCache;
+  NotesCache mNotesCache;
 };
 
 #endif /* TUNE_HH_ */

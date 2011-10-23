@@ -16,53 +16,45 @@
 
 using namespace std;
 
-Instrument instrument;
+Instrument instrument(2);
 
 void
-OutputNote(NoteEvent noteEvent, FluidOutputSequence* output, TimeDelta& offset)
+OutputNote(const NoteEvent& noteEvent, FluidOutputSequence* output, TimeDelta& offset)
 {
   InstrumentEvent event(noteEvent, offset, &instrument, 100);
-  event = event.Randomize(1.0/1024);
+  event = event.Randomize(1.0/2048);
   output->SendInstrumentEvent(&event);
 }
 
 void
-OutputSequenceData(const SequenceData* data, FluidOutputSequence* output, TimeDelta& offset)
+OutputSequenceData(const NoteSequenceData& data, FluidOutputSequence* output, TimeDelta& offset)
 {
-  const std::vector<NoteEvent>& notes = dynamic_cast<const NoteSequenceData*>(data)->GetNotes();
-printf ("Offset: %d\n", offset.GetTicks());
+  const std::vector<NoteEvent>& notes = data.GetNotes();
   std::for_each(notes.begin(), notes.end(), sigc::bind(sigc::ptr_fun(&OutputNote), output, offset));
-  offset += data->GetLength();
-}
-
-void
-OutputSequence(FluidOutputSequence* output, const DataSequence* sequence, TimeDelta offset)
-{
-  const std::vector<SequenceData*>& data = sequence->GetData();
-  TimeDelta offsetMod = offset;
-  std::for_each(data.begin(), data.end(), sigc::bind(sigc::ptr_fun(&OutputSequenceData), output, sigc::ref(offsetMod)));
+  offset += data.GetLength();
 }
 
 int main(int argc, char* argv[]) {
   Tune tune;
   tune.Parse(argv[1]);
 
-  FluidOutputSequence* output = new FluidOutputSequence();
+  FluidOutputSequence* output = new FluidOutputSequence;
   TimeDelta offset = 0;
   const DataSequence* sequence;
 
-  sequence = &tune.getIntro();
-  offset = output->GetCurrentTime();
-  OutputSequence(output, sequence, offset);
-  printf("length: %d\n", sequence->GetLength().GetTicks());
-  offset += sequence->GetLength();
-  sequence = &tune.getMain();
-  OutputSequence(output, sequence, offset);
-  offset += sequence->GetLength();
-  sequence = &tune.getOutro();
-  OutputSequence(output, sequence, offset);
+  int bar;
 
-  sleep(32000);
+  offset = output->GetCurrentTime();
+
+  SongState state;
+  state.mLastTime = true;
+  for (bar = -1; bar < 32; bar++) {
+    OutputSequenceData(tune.GetNotes(bar, state), output, offset);
+  }
+
+  sleep(34);
+
+  delete output;
   
   return 0;
 }
