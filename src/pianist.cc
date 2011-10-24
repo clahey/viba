@@ -7,19 +7,7 @@
 
 #include "pianist.hh"
 
-Pianist::~Pianist()
-{
-  // TODO Auto-generated destructor stub
-}
-
 void
-Pianist::GenerateNotes(Tune* tune,
-		       InstrumentSequenceData* sequenceData,
-		       int barNum,
-		       const SongState& state)
+Generate(Sequence* dest, TimeDelta start, TimeDelta end, const SongState& state)
 {
-  if (barNum < 0) {
-    return;
-  }
-  
 }

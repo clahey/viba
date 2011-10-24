@@ -6,13 +6,12 @@ viba_SOURCES=viba.cc \
 	instrumentEvent.cc \
 	instrumentSequenceData.cc \
 	fluidOutputSequence.cc \
-	musician.cc \
 	note.cc \
 	noteSequenceData.cc \
 	pianist.cc \
 	sequenceData.cc \
 	timeDelta.cc \
-	translator.cc \
+	timeMgr.cc \
 	tune.cc
 
 viba_LDADD = $(VIBA_LIBS) $(BOOST_LDFLAGS) $(BOOST_FILESYSTEM_LIB)

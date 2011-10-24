@@ -9,12 +9,14 @@
 #ifndef SONGSTATE_HH_
 #define SONGSTATE_HH_
 
+#include "tune.hh"
+
 struct SongState
 {
   bool mLastTime;
-  bool operator< (const SongState& other) const {
-    return !mLastTime && other.mLastTime;
-  }
+  Tune *tune;
+  TimeDelta tuneStart;
+  TimeDelta repeatStart;
 };
 
 #endif /* SONGSTATE_HH_ */

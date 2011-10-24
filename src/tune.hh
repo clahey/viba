@@ -7,13 +7,13 @@
 
 #ifndef TUNE_HH_
 #define TUNE_HH_
-
+ 
 #include <glibmm/ustring.h>
 #include <map>
 
 #include "dataSequence.hh"
 #include "noteSequenceData.hh"
-#include "songState.hh"
+#include "types.hh"
 
 /*
  *
@@ -124,7 +124,7 @@ private:
     std::vector<NoteSequenceData> bars;
     NoteSequenceData* intro;
   };
-  typedef std::map<SongState, NotesCacheData> NotesCache;
+  typedef std::map<bool, NotesCacheData> NotesCache;
   NotesCache mNotesCache;
 };
 

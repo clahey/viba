@@ -62,3 +62,31 @@ TimeDelta::operator!=(const TimeDelta& other)
 {
   return mTicks != other.mTicks;
 }
+
+bool
+TimeDelta::operator<(const TimeDelta& other)
+  const
+{
+  return mTicks < other.mTicks;
+}
+
+bool
+TimeDelta::operator<=(const TimeDelta& other)
+  const
+{
+  return mTicks <= other.mTicks;
+}
+
+bool
+TimeDelta::operator>(const TimeDelta& other)
+  const
+{
+  return mTicks > other.mTicks;
+}
+
+bool
+TimeDelta::operator>=(const TimeDelta& other)
+  const
+{
+  return mTicks >= other.mTicks;
+}

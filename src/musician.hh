@@ -8,6 +8,7 @@
 #ifndef MUSICIAN_HH_
 #define MUSICIAN_HH_
 
+#include "generator.hh"
 #include "instrumentSequenceData.hh"
 #include "songState.hh"
 #include "tune.hh"
@@ -15,12 +16,12 @@
 /*
  *
  */
-class Musician
+class Musician : public Generator
 {
+public:
+  virtual void SetTune(Tune* tune) { mTune = tune; };
 protected:
-  Musician();
-  virtual ~Musician();
-  virtual void GenerateNotes(Tune* tune, InstrumentSequenceData* sequenceData, int barNum, const SongState& state) = 0;
+  Tune* mTune;
 };
 
 #endif /* MUSICIAN_HH_ */

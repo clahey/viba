@@ -12,6 +12,7 @@
 #include <iostream>
 #include <sigc++/sigc++.h>
 #include "fluidOutputSequence.hh"
+#include "songState.hh"
 #include "tune.hh"
 
 using namespace std;

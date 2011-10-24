@@ -11,6 +11,17 @@ const int FluidOutputSequence::sSPerM;
 const int FluidOutputSequence::sMSPerS;
 const int FluidOutputSequence::sBeatsPerBar;
 
+static void
+OnCallback(unsigned int time,
+	   fluid_event_t* event,
+	   fluid_sequencer_t* seq,
+	   void* data)
+{
+  FluidOutputSequence* sequence = static_cast<FluidOutputSequence*>(data);
+  assert(sequence != NULL);
+  sequence->OnCallback(time);
+}
+
 FluidOutputSequence::FluidOutputSequence()
   : mSequencerBase(0),
     mTicksBase(0),
@@ -33,8 +44,7 @@ FluidOutputSequence::FluidOutputSequence()
     fluid_res = fluid_synth_sfload(mSynth, "/usr/share/sounds/sf2/FluidR3_GM.sf2", 1);
 
     // register myself as second destination
-    //    mMySeqID = fluid_sequencer_register_client(sequencer, "me", seq_callback, NULL);
-    mMySeqID = -1;
+    mMySeqID = fluid_sequencer_register_client(mSequencer, "me", ::OnCallback, this);
 }
 
 FluidOutputSequence::~FluidOutputSequence()
@@ -67,4 +77,37 @@ FluidOutputSequence::SendInstrumentEvent(InstrumentEvent* event)
       return false;
     }
     delete_fluid_event(evt);
+}
+
+void
+FluidOutputSequence::ScheduleCallback(TimeDelta time, sigc::slot<void> callback)
+{
+  mCallbackMap.insert(std::make_pair(time, callback));
+  ScheduleNextTimeout();
+}
+
+void
+FluidOutputSequence::ScheduleNextTimeout()
+{
+  if (!mCallbackMap.empty()) {
+    fluid_event_t *evt = new_fluid_event();
+    fluid_event_set_source(evt, -1);
+    fluid_event_set_dest(evt, mMySeqID);
+    fluid_event_timer(evt, NULL);
+    fluid_sequencer_send_at(mSequencer, evt,
+			    TimeDeltaToMS(mCallbackMap.begin()->first), 1);
+    delete_fluid_event(evt);
+  }
+}
+
+void
+FluidOutputSequence::OnCallback(unsigned int time)
+{
+  CallbackMap::iterator end = mCallbackMap.upper_bound(MSToTimeDelta(time));
+  CallbackMap::iterator it = mCallbackMap.begin();
+  while (it != end) {
+    it->second();
+    mCallbackMap.erase(it++);
+  }
+  ScheduleNextTimeout();
 }

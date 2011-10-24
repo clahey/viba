@@ -15,10 +15,8 @@
  */
 class Pianist : public Musician
 {
-protected:
-  Pianist();
-  virtual ~Pianist();
-  virtual void GenerateNotes(Tune* tune, InstrumentSequenceData* sequenceData, int barNum, const SongState& state);
+public:
+  void Generate(Sequence* to, TimeDelta start, TimeDelta end, const SongState& state);
 };
 
 #endif /* PIANIST_HH_ */

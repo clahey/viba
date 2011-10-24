@@ -18,6 +18,7 @@
 #include <libxml++/parsers/textreader.h>
 
 #include "noteSequenceData.hh"
+#include "songState.hh"
 
 NoteSequenceData Tune::sEmptyBar(TimeDelta::sBar);
 
@@ -208,24 +209,25 @@ Fill(OutputType& output,
 NoteSequenceData&
 Tune::GetNotes(int bar, const SongState& state)
 {
-  if (mNotesCache.find(state) == mNotesCache.end()) {
+  NotesCacheData& data = mNotesCache[state.mLastTime];
+  if (data.intro == NULL) {
     TimeDelta current = 0;
-    mNotesCache[state].intro = new NoteSequenceData(mIntro.GetLength());
-    Fill(*mNotesCache[state].intro, mIntro, current);
+    data.intro = new NoteSequenceData(mIntro.GetLength());
+    Fill(*data.intro, mIntro, current);
     current = 0;
-    Fill(mNotesCache[state].bars, mMain, current);
+    Fill(data.bars, mMain, current);
     if (state.mLastTime) {
-      Fill(mNotesCache[state].bars, mOutro, current);
+      Fill(data.bars, mOutro, current);
     } else {
-      Fill(mNotesCache[state].bars, mRepeat, current);
+      Fill(data.bars, mRepeat, current);
     }
-    assert(mNotesCache[state].intro != NULL);
+    assert(data.intro != NULL);
   }
   if (bar < 0) {
-    return *mNotesCache[state].intro;
+    return *data.intro;
   } else {
-    if (mNotesCache[state].bars.size() > bar) {
-      return mNotesCache[state].bars[bar];
+    if (data.bars.size() > bar) {
+      return data.bars[bar];
     }
   }
   return sEmptyBar;

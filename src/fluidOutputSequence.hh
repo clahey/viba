@@ -8,6 +8,7 @@
 #ifndef FLUIDOUTPUTSEQUENCE_HH_
 #define FLUIDOUTPUTSEQUENCE_HH_
 
+#include <map>
 
 #include "instrumentEvent.hh"
 #include "outputSequence.hh"
@@ -23,11 +24,18 @@ extern "C" {
 class FluidOutputSequence : public OutputSequence
 {
 public:
+  // Overrides
   FluidOutputSequence();
   ~FluidOutputSequence();
   TimeDelta GetLength() const { return 0; };
   TimeDelta GetCurrentTime() { return MSToTimeDelta(fluid_sequencer_get_tick(mSequencer)); };
+  void ScheduleCallback(TimeDelta offset, sigc::slot<void> callback);
+
+  // New methods
   bool SendInstrumentEvent(InstrumentEvent* event);
+
+  // For internal use from C code.
+  void OnCallback(unsigned int time);
 
 private:
   FluidOutputSequence(const FluidOutputSequence& other) {};
@@ -43,6 +51,8 @@ private:
     TimeDelta time_offset = time - mTicksBase;
     return static_cast<unsigned int>((time_offset / TimeDelta::sBar) / mBPM * (sSPerM * sMSPerS * sBeatsPerBar)) + mSequencerBase;
   };
+  void ScheduleNextTimeout();
+
   fluid_sequencer_t* mSequencer;
   fluid_synth_t* mSynth;
   fluid_audio_driver_t* mDriver;
@@ -51,6 +61,8 @@ private:
   int mSequencerBase;
   TimeDelta mTicksBase;
   double mBPM;
+  typedef std::multimap<TimeDelta, sigc::slot<void> > CallbackMap;
+  CallbackMap mCallbackMap;
 };
 
 #endif /* OUTPUTSEQUENCE_HH_ */
