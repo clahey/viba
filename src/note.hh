@@ -19,7 +19,12 @@ public:
   static const int sNatural = 0;
   static const int sSharp = 1;
   static const int sFlat = -1;
-  int GetMidiNote() { return mMidiNote; };
+  int GetMidiNote() const { return mMidiNote; };
+
+  bool operator<(Note other) const { return mMidiNote < other.mMidiNote; };
+  int operator-(Note other) const { return mMidiNote - other.mMidiNote; };
+  Note operator+(int other) const { return Note(mMidiNote + other); };
+  Note operator-(int other) const { return Note(mMidiNote - other); };
 private:
   int mMidiNote;
 };

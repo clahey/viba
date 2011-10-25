@@ -17,7 +17,6 @@
 #include <boost/filesystem/path.hpp>
 #include <libxml++/parsers/textreader.h>
 
-#include "noteSequenceData.hh"
 #include "songState.hh"
 
 NoteSequenceData Tune::sEmptyBar(TimeDelta::sBar);
@@ -51,17 +50,17 @@ Next(xmlpp::TextReader& reader, xmlpp::TextReader::xmlNodeType type = xmlpp::Tex
 }
 
 static bool
-ParseTuneData(DataSequence* sequence, const boost::filesystem::path& path, TimeDelta length)
+ParseTuneData(DataSequence& sequence, const boost::filesystem::path& path, TimeDelta length)
 {
   boost::filesystem::ifstream notesFile(path);
   double offset;
   std::string type;
-  std::vector<SequenceData*>& sequenceVector = sequence->GetData();
+  std::vector<SequenceData*>& sequenceVector = sequence.GetData();
   int barNum = 0;
   sequenceVector.clear();
   NoteSequenceData* sequenceData = new NoteSequenceData(length);
   sequenceVector.push_back(sequenceData);
-  std::vector<NoteEvent>& notes = sequenceData->GetNotes();
+  std::vector<NoteEvent>& notes = sequenceData->GetData();
   while(notesFile.good()) {
     notesFile >> offset >> type;
     if (type == "note") {
@@ -77,6 +76,26 @@ ParseTuneData(DataSequence* sequence, const boost::filesystem::path& path, TimeD
     notesFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
   return true;
+}
+
+static bool
+ParseChordData(const DataSequence& src, DataSequence& dest)
+{
+  const DataSequence::SequenceType& srcData = src.GetData();
+  DataSequence::SequenceType::const_iterator it;
+  DataSequence::SequenceType& destData = dest.GetData();
+  for (it = srcData.begin(); it != srcData.end(); it++) {
+    const NoteSequenceData* noteSequence = dynamic_cast<const NoteSequenceData*>(*it);
+    assert(noteSequence != NULL);
+    const NoteSequenceData::SequenceType notes = noteSequence->GetData();
+    NoteSequenceData::SequenceType::const_iterator note_it;
+    ChordSequenceData* chordSequence =
+      new ChordSequenceData(noteSequence->GetLength());
+
+    for (note_it = notes.begin(); note_it != notes.end(); note_it++) {
+    }
+    destData.push_back(chordSequence);
+  }
 }
 
 bool
@@ -148,7 +167,7 @@ Tune::Parse(const Glib::ustring& xmlFile)
       }
       boost::filesystem::path path(xmlFile);
       path.remove_filename() /= fileName;
-      ret = ParseTuneData(sequence, path.string(), TimeDelta::sBar * length);
+      ret = ParseTuneData(*sequence, path.string(), TimeDelta::sBar * length);
       if (!ret) {
 	return false;
       }
@@ -163,7 +182,7 @@ Fill(NoteSequenceData& output,
      const NoteEvent& input,
      TimeDelta& location)
 {
-  output.GetNotes().push_back(NoteEvent(input, location));
+  output.GetData().push_back(NoteEvent(input, location));
 }
 
 static void
@@ -176,7 +195,7 @@ Fill(std::vector<NoteSequenceData>& output,
   while (output.size() <= bar) {
     output.push_back(NoteSequenceData(TimeDelta::sBar));
   }
-  output[bar].GetNotes().push_back(NoteEvent(input, location - TimeDelta::sBar * bar));
+  output[bar].GetData().push_back(NoteEvent(input, location - TimeDelta::sBar * bar));
 }
 
 template<class OutputType>
@@ -185,7 +204,7 @@ Fill(OutputType& output,
      const NoteSequenceData& input,
      TimeDelta& location)
 {
-  const NoteSequenceData::SequenceType& sequence = input.GetNotes();
+  const NoteSequenceData::SequenceType& sequence = input.GetData();
   NoteSequenceData::SequenceType::const_iterator it;
   for (it = sequence.begin(); it != sequence.end(); it++) {
     Fill(output, *it, location);

@@ -12,7 +12,7 @@
 #include <map>
 
 #include "dataSequence.hh"
-#include "noteSequenceData.hh"
+#include "simpleSequenceData.hh"
 #include "types.hh"
 
 /*

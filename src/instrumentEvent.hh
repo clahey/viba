@@ -31,7 +31,7 @@ public:
   Instrument* GetInstrument() { return mInstrument; };
   int GetVelocity() { return mVelocity; };
 
-  InstrumentEvent Randomize(double sigma = 1.0 / 128);
+  void Randomize(double sigma = 1.0 / 128);
 
 private:
   typedef boost::variate_generator<boost::mt19937&, 

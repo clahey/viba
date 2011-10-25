@@ -12,15 +12,13 @@ Pianist::GenerateBar(const SongState::BarData& bar, FluidOutputSequence* output,
 {
   const NoteSequenceData& noteData = state.mTune->GetNotes(bar.mBarNum, state);
 
-  printf("Outputting %d (%d - %d offset %d)\n", bar.mBarNum, bar.mStart.GetTicks(), bar.mEnd.GetTicks(), bar.mOffset.GetTicks());
-
-  const std::vector<NoteEvent>& notes = noteData.GetNotes();
+  const std::vector<NoteEvent>& notes = noteData.GetData();
   std::vector<NoteEvent>::const_iterator it;
   for (it = notes.begin(); it != notes.end(); it++) {
     const NoteEvent& noteEvent = *it;
     if (noteEvent.GetOffset() >= bar.mStart && noteEvent.GetOffset() < bar.mEnd) {
       InstrumentEvent event(noteEvent, bar.mOffset, mInstrument, 100);
-      event = event.Randomize(1.0/2048);
+      event.Randomize(1.0/2048);
       output->SendInstrumentEvent(&event);
     }
   }
