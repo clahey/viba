@@ -10,6 +10,7 @@ viba_SOURCES=viba.cc \
 	noteSequenceData.cc \
 	pianist.cc \
 	sequenceData.cc \
+	songState.cc \
 	timeDelta.cc \
 	timeMgr.cc \
 	tune.cc

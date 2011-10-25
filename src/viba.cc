@@ -11,49 +11,34 @@
 #include <algorithm>
 #include <iostream>
 #include <sigc++/sigc++.h>
+#include <glibmm/main.h>
+
 #include "fluidOutputSequence.hh"
-#include "songState.hh"
-#include "tune.hh"
+#include "timeMgr.hh"
+#include "pianist.hh"
 
 using namespace std;
-
-Instrument instrument(2);
-
-void
-OutputNote(const NoteEvent& noteEvent, FluidOutputSequence* output, TimeDelta& offset)
-{
-  InstrumentEvent event(noteEvent, offset, &instrument, 100);
-  event = event.Randomize(1.0/2048);
-  output->SendInstrumentEvent(&event);
-}
-
-void
-OutputSequenceData(const NoteSequenceData& data, FluidOutputSequence* output, TimeDelta& offset)
-{
-  const std::vector<NoteEvent>& notes = data.GetNotes();
-  std::for_each(notes.begin(), notes.end(), sigc::bind(sigc::ptr_fun(&OutputNote), output, offset));
-  offset += data.GetLength();
-}
-
 int main(int argc, char* argv[]) {
   Tune tune;
   tune.Parse(argv[1]);
+  Glib::RefPtr<Glib::MainLoop> loop = Glib::MainLoop::create();
 
   FluidOutputSequence* output = new FluidOutputSequence;
   TimeDelta offset = 0;
   const DataSequence* sequence;
+  Instrument* instrument = new Instrument(2);
+  Generator* pianist = new Pianist(instrument);
+  TimeMgr* timeMgr = new TimeMgr;
+  TimeMgr::ID outputId = timeMgr->AddSequence(output);
+  timeMgr->AttachGenerator(pianist, outputId);
+  timeMgr->SetOutput(outputId);
+  timeMgr->mSongState.mLastTime = true;
+  timeMgr->mSongState.mTune = &tune;
+  timeMgr->Start();
 
-  int bar;
+  output->ScheduleCallback(timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * 32, sigc::mem_fun(loop.operator->(), &Glib::MainLoop::quit));
 
-  offset = output->GetCurrentTime();
-
-  SongState state;
-  state.mLastTime = true;
-  for (bar = -1; bar < 32; bar++) {
-    OutputSequenceData(tune.GetNotes(bar, state), output, offset);
-  }
-
-  sleep(34);
+  loop->run();
 
   delete output;
   

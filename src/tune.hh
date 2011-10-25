@@ -26,42 +26,42 @@ public:
 
   bool Parse(const Glib::ustring& xmlFile);
 
-  const DataSequence & getIntro() const
+  const DataSequence & GetIntro() const
   {
     return mIntro;
   }
 
-  const DataSequence & getIntroChords() const
+  const DataSequence & GetIntroChords() const
   {
     return mIntroChords;
   }
 
-  const DataSequence & getMain() const
+  const DataSequence & GetMain() const
   {
     return mMain;
   }
 
-  const DataSequence & getMainChords() const
+  const DataSequence & GetMainChords() const
   {
     return mMainChords;
   }
 
-  const DataSequence & getOutro() const
+  const DataSequence & GetOutro() const
   {
     return mOutro;
   }
 
-  const DataSequence & getOutroChords() const
+  const DataSequence & GetOutroChords() const
   {
     return mOutroChords;
   }
 
-  const DataSequence & getRepeat() const
+  const DataSequence & GetRepeat() const
   {
     return mRepeat;
   }
 
-  const DataSequence & getRepeatChords() const
+  const DataSequence & GetRepeatChords() const
   {
     return mRepeatChords;
   }

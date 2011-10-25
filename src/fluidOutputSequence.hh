@@ -63,6 +63,7 @@ private:
   double mBPM;
   typedef std::multimap<TimeDelta, sigc::slot<void> > CallbackMap;
   CallbackMap mCallbackMap;
+  bool mCallbackWaiting;
 };
 
 #endif /* OUTPUTSEQUENCE_HH_ */

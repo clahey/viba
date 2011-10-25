@@ -54,7 +54,7 @@ public:
   bool operator> (const TimeDelta& other) const;
   bool operator>= (const TimeDelta& other) const;
 
-  int GetTicks() { return mTicks; };
+  int GetTicks() const { return mTicks; };
 
   static const TimeDelta sBar;
 private:

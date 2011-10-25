@@ -7,6 +7,8 @@
 
 #include "fluidOutputSequence.hh"
 
+#include <glibmm/main.h>
+
 const int FluidOutputSequence::sSPerM;
 const int FluidOutputSequence::sMSPerS;
 const int FluidOutputSequence::sBeatsPerBar;
@@ -18,14 +20,16 @@ OnCallback(unsigned int time,
 	   void* data)
 {
   FluidOutputSequence* sequence = static_cast<FluidOutputSequence*>(data);
+  printf("::OnCallback: %d\n", time);
   assert(sequence != NULL);
-  sequence->OnCallback(time);
+  Glib::signal_idle().connect_once(sigc::bind(sigc::mem_fun(sequence, &FluidOutputSequence::OnCallback), time));
 }
 
 FluidOutputSequence::FluidOutputSequence()
   : mSequencerBase(0),
     mTicksBase(0),
-    mBPM(120)
+    mBPM(120),
+    mCallbackWaiting(false)
 {
     fluid_settings_t* settings;
     settings = new_fluid_settings();
@@ -89,7 +93,7 @@ FluidOutputSequence::ScheduleCallback(TimeDelta time, sigc::slot<void> callback)
 void
 FluidOutputSequence::ScheduleNextTimeout()
 {
-  if (!mCallbackMap.empty()) {
+  if (!mCallbackMap.empty() && !mCallbackWaiting) {
     fluid_event_t *evt = new_fluid_event();
     fluid_event_set_source(evt, -1);
     fluid_event_set_dest(evt, mMySeqID);
@@ -97,12 +101,15 @@ FluidOutputSequence::ScheduleNextTimeout()
     fluid_sequencer_send_at(mSequencer, evt,
 			    TimeDeltaToMS(mCallbackMap.begin()->first), 1);
     delete_fluid_event(evt);
+    mCallbackWaiting = true;
   }
 }
 
 void
 FluidOutputSequence::OnCallback(unsigned int time)
 {
+  printf ("OnCallback %d\n", time);
+  mCallbackWaiting = false;
   CallbackMap::iterator end = mCallbackMap.upper_bound(MSToTimeDelta(time));
   CallbackMap::iterator it = mCallbackMap.begin();
   while (it != end) {

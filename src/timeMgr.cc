@@ -72,17 +72,21 @@ void
 TimeMgr::FillSequences()
 {
   assert(mOutputSequence != NULL);
-  TimeDelta position = mOutputSequence->GetCurrentTime();
+  TimeDelta position = mOutputSequence->GetCurrentTime() - mSongState.mRepeatStart;
   // Finish this bar and do one more.
   position = TimeDelta::sBar * static_cast<int>((position + TimeDelta::sBar - 1) / TimeDelta::sBar);
   position += TimeDelta::sBar;
+  position += mSongState.mRepeatStart;
   FillSequence(mOutput, position);
+  mOutputSequence->ScheduleCallback(position - TimeDelta::sBar / 2, sigc::mem_fun(this, &TimeMgr::FillSequences));
 }
 
 void
 TimeMgr::Start()
 {
   assert(mOutput != sInvalid);
-  mSongState.tuneStart = mOutputSequence->GetCurrentTime();
+  assert(mSongState.mTune != NULL);
+  mSongState.mTuneStart = mOutputSequence->GetCurrentTime();
+  mSongState.mRepeatStart = mSongState.mTuneStart + mSongState.mTune->GetIntro().GetLength();
   FillSequences();
 }
