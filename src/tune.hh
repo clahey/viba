@@ -13,6 +13,7 @@
 
 #include "dataSequence.hh"
 #include "simpleSequenceData.hh"
+#include "chordSequenceData.hh"
 #include "types.hh"
 
 /*
@@ -106,10 +107,13 @@ public:
     mRepeatChords = repeatChords;
   }
 
-  NoteSequenceData& GetNotes(int bar, const SongState& state);
+  const NoteSequenceData& GetNotes(int bar, const SongState& state) const;
+  const ChordSequenceData& GetChords(int bar, const SongState& state) const;
+  const Chord& GetChord(TimeDelta offset, const SongState& state) const;
 
 private:
   static NoteSequenceData sEmptyBar;
+  static ChordSequenceData sEmptyChordBar;
   DataSequence mIntro;
   DataSequence mMain;
   DataSequence mRepeat;
@@ -125,7 +129,15 @@ private:
     NoteSequenceData* intro;
   };
   typedef std::map<bool, NotesCacheData> NotesCache;
-  NotesCache mNotesCache;
+  mutable NotesCache mNotesCache;
+  struct ChordsCacheData {
+    ChordsCacheData() : intro(NULL) {};
+    ~ChordsCacheData() { delete intro; }
+    std::vector<ChordSequenceData> bars;
+    ChordSequenceData* intro;
+  };
+  typedef std::map<bool, ChordsCacheData> ChordsCache;
+  mutable ChordsCache mChordsCache;
 };
 
 #endif /* TUNE_HH_ */

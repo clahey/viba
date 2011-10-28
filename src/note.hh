@@ -22,6 +22,9 @@ public:
   int GetMidiNote() const { return mMidiNote; };
 
   bool operator<(Note other) const { return mMidiNote < other.mMidiNote; };
+  bool operator>(Note other) const { return mMidiNote > other.mMidiNote; };
+  bool operator<=(Note other) const { return mMidiNote <= other.mMidiNote; };
+  bool operator>=(Note other) const { return mMidiNote >= other.mMidiNote; };
   int operator-(Note other) const { return mMidiNote - other.mMidiNote; };
   Note operator+(int other) const { return Note(mMidiNote + other); };
   Note operator-(int other) const { return Note(mMidiNote - other); };

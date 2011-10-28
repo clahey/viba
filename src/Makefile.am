@@ -1,4 +1,5 @@
 INCLUDES = $(VIBA_CFLAGS) $(BOOST_CPPFLAGS)
+AM_CXXFLAGS = -Wall -Werror
 
 bin_PROGRAMS=viba
 viba_SOURCES=viba.cc \

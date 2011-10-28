@@ -20,6 +20,8 @@ public:
   Note GetThird(Note octave) const;
   Note GetFifth(Note octave) const;
 
+  bool operator== (Chord other) const { return mBase == other.mBase && mThird == other.mThird && mFifth == other.mFifth; };
+
 private:
   int mBase; // 0 - 11, 0 = C, 10 = B flat.
   int mThird;

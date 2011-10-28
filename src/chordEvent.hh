@@ -20,11 +20,13 @@ public:
   ChordEvent(Chord chord, TimeDelta length, TimeDelta offset) : mChord(chord), mLength(length), mOffset(offset) {};
   ChordEvent(ChordEvent event, TimeDelta offset) : mChord(event.mChord), mLength(event.mLength), mOffset(event.mOffset + offset) {};
 
-  Chord GetChord() const { return mChord; };
+  const Chord& GetChord() const { return mChord; };
   TimeDelta GetLength() const { return mLength; };
   TimeDelta GetOffset() const { return mOffset; };
+  void SetLength(TimeDelta length) { mLength = length; };
+  void SetOffset(TimeDelta offset) { mOffset = offset; };
 
-  Chord SetChord(const Chord& val) { mChord = val; };
+  void SetChord(const Chord& val) { mChord = val; };
 protected:
   Chord mChord;
   TimeDelta mLength;

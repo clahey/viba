@@ -25,7 +25,6 @@ int main(int argc, char* argv[]) {
 
   FluidOutputSequence* output = new FluidOutputSequence;
   TimeDelta offset = 0;
-  const DataSequence* sequence;
   Instrument* instrument = new Instrument(2);
   Generator* pianist = new Pianist(instrument);
   TimeMgr* timeMgr = new TimeMgr;

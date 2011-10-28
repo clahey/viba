@@ -26,12 +26,12 @@ public:
   TimeDelta GetLength() const { return mLength; }
   SequenceType& GetData() { return mData; };
   const SequenceType& GetData() const { return mData; };
-private:
+  void PushBack(const EventType& event) { mData.push_back(event); };
+protected:
   TimeDelta mLength;
   SequenceType mData;
 };
 
 typedef SimpleSequenceData<NoteEvent> NoteSequenceData;
-typedef SimpleSequenceData<ChordEvent> ChordSequenceData;
 
 #endif /* SIMPLESEQUENCEDATA_HH_ */

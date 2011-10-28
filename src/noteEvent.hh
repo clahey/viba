@@ -24,7 +24,7 @@ public:
   TimeDelta GetLength() const { return mLength; };
   TimeDelta GetOffset() const { return mOffset; };
 
-  Note SetNote(const Note& val) { mNote = val; };
+  void SetNote(const Note& val) { mNote = val; };
 protected:
   Note mNote;
   TimeDelta mLength;

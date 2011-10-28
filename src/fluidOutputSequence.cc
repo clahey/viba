@@ -81,6 +81,7 @@ FluidOutputSequence::SendInstrumentEvent(InstrumentEvent* event)
       return false;
     }
     delete_fluid_event(evt);
+    return true;
 }
 
 void

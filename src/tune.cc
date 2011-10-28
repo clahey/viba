@@ -20,6 +20,7 @@
 #include "songState.hh"
 
 NoteSequenceData Tune::sEmptyBar(TimeDelta::sBar);
+ChordSequenceData Tune::sEmptyChordBar(TimeDelta::sBar);
 
 Tune::Tune()
 {
@@ -56,11 +57,9 @@ ParseTuneData(DataSequence& sequence, const boost::filesystem::path& path, TimeD
   double offset;
   std::string type;
   std::vector<SequenceData*>& sequenceVector = sequence.GetData();
-  int barNum = 0;
   sequenceVector.clear();
-  NoteSequenceData* sequenceData = new NoteSequenceData(length);
-  sequenceVector.push_back(sequenceData);
-  std::vector<NoteEvent>& notes = sequenceData->GetData();
+  NoteSequenceData* notes = new NoteSequenceData(length);
+  sequenceVector.push_back(notes);
   while(notesFile.good()) {
     notesFile >> offset >> type;
     if (type == "note") {
@@ -70,7 +69,7 @@ ParseTuneData(DataSequence& sequence, const boost::filesystem::path& path, TimeD
       notesFile.width(10);
       notesFile >> midiNote >> waste >> duration;
       if (notesFile.good()) {
-	notes.push_back(NoteEvent(midiNote, TimeDelta::sBar * duration, TimeDelta::sBar * offset));
+	notes->PushBack(NoteEvent(midiNote, TimeDelta::sBar * duration, TimeDelta::sBar * offset));
       }
     }
     notesFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -91,11 +90,35 @@ ParseChordData(const DataSequence& src, DataSequence& dest)
     NoteSequenceData::SequenceType::const_iterator note_it;
     ChordSequenceData* chordSequence =
       new ChordSequenceData(noteSequence->GetLength());
-
+    std::vector<Note> chordNotes;
+    TimeDelta length = -1;
+    TimeDelta offset = -1;
     for (note_it = notes.begin(); note_it != notes.end(); note_it++) {
+      const NoteEvent& event = *note_it;
+      if (event.GetLength() == length && event.GetOffset() == offset) {
+	chordNotes.push_back(event.GetNote());
+      } else {
+	if (length != -1 && offset != -1) {
+	  if (chordNotes.size() != 3 || chordNotes[0] >= chordNotes[1] || chordNotes[1] >= chordNotes[2]) {
+	    return false;
+	  }
+	  chordSequence->PushBack(ChordEvent(Chord(chordNotes), length, offset));
+	}
+	chordNotes.clear();
+	length = event.GetLength();
+	offset = event.GetOffset();
+	chordNotes.push_back(event.GetNote());
+      }
+    }
+    if (length != -1 && offset != -1) {
+      if (chordNotes.size() != 3 || chordNotes[0] >= chordNotes[1] || chordNotes[1] >= chordNotes[2]) {
+	return false;
+      }
+      chordSequence->PushBack(ChordEvent(Chord(chordNotes), length, offset));
     }
     destData.push_back(chordSequence);
   }
+  return true;
 }
 
 bool
@@ -127,49 +150,57 @@ Tune::Parse(const Glib::ustring& xmlFile)
       }
       Glib::ustring fileName = reader.get_value();
       DataSequence* sequence;
-      if (section == "intro") {
-	if (part == "melody") {
+      DataSequence* chordSequence = NULL;
+      if (part == "melody") {
+	if (section == "intro") {
 	  sequence = &mIntro;
-	} else if (part == "harmony") {
-	  sequence = &mIntroChords;
-	} else {
-	  return false;
-	}
-      } else if (section == "main") {
-	if (part == "melody") {
+	} else if (section == "main") {
 	  sequence = &mMain;
-	} else if (part == "harmony") {
-	  sequence = &mMainChords;
-	} else {
-	  return false;
-	}
-      } else if (section == "repeat") {
-	if (part == "melody") {
+	} else if (section == "repeat") {
 	  sequence = &mRepeat;
-	} else if (part == "harmony") {
-	  sequence = &mRepeatChords;
+	} else if (section == "outro") {
+	  sequence = &mOutro;
 	} else {
 	  return false;
 	}
-      } else if (section == "outro") {
-	if (part == "melody") {
-	  sequence = &mOutro;
-	} else if (part == "harmony") {
-	  sequence = &mOutroChords;
+      } else if (part == "harmony") {
+	sequence = new DataSequence;
+	if (section == "intro") {
+	  chordSequence = &mIntroChords;
+	} else if (section == "main") {
+	  chordSequence = &mMainChords;
+	} else if (section == "repeat") {
+	  chordSequence = &mRepeatChords;
+	} else if (section == "outtro") {
+	  chordSequence = &mOutroChords;
 	} else {
+	  delete sequence;
 	  return false;
 	}
       } else {
 	return false;
       }
       if (sequence->GetLength() != 0) {
+	if (chordSequence != NULL) {
+	  delete sequence;
+	}
 	return false;
       }
       boost::filesystem::path path(xmlFile);
       path.remove_filename() /= fileName;
       ret = ParseTuneData(*sequence, path.string(), TimeDelta::sBar * length);
       if (!ret) {
+	if (chordSequence != NULL) {
+	  delete sequence;
+	}
 	return false;
+      }
+      if (chordSequence != NULL) {
+	ret = ParseChordData(*sequence, *chordSequence);
+	delete sequence;
+	if (!ret) {
+	  return false;
+	}
       }
       Next(reader);
     }
@@ -182,7 +213,7 @@ Fill(NoteSequenceData& output,
      const NoteEvent& input,
      TimeDelta& location)
 {
-  output.GetData().push_back(NoteEvent(input, location));
+  output.PushBack(NoteEvent(input, location));
 }
 
 static void
@@ -191,11 +222,11 @@ Fill(std::vector<NoteSequenceData>& output,
      TimeDelta& location)
 {
   TimeDelta offset = input.GetOffset() + location;
-  int bar = static_cast<int>(offset / TimeDelta::sBar);
+  unsigned int bar = static_cast<int>(offset / TimeDelta::sBar);
   while (output.size() <= bar) {
     output.push_back(NoteSequenceData(TimeDelta::sBar));
   }
-  output[bar].GetData().push_back(NoteEvent(input, location - TimeDelta::sBar * bar));
+  output[bar].PushBack(NoteEvent(input, location - TimeDelta::sBar * bar));
 }
 
 template<class OutputType>
@@ -225,8 +256,9 @@ Fill(OutputType& output,
   }
 }
 
-NoteSequenceData&
+const NoteSequenceData&
 Tune::GetNotes(int bar, const SongState& state)
+  const
 {
   NotesCacheData& data = mNotesCache[state.mLastTime];
   if (data.intro == NULL) {
@@ -245,9 +277,108 @@ Tune::GetNotes(int bar, const SongState& state)
   if (bar < 0) {
     return *data.intro;
   } else {
-    if (data.bars.size() > bar) {
+    if ((int) data.bars.size() > bar) {
       return data.bars[bar];
     }
   }
   return sEmptyBar;
+}
+
+static void
+FillChords(ChordSequenceData& output,
+     const ChordEvent& input,
+     TimeDelta& location)
+{
+  output.PushBack(ChordEvent(input, location));
+}
+
+static void
+FillChords(std::vector<ChordSequenceData>& output,
+     const ChordEvent& input,
+     TimeDelta& location)
+{
+  TimeDelta offset = input.GetOffset() + location;
+  unsigned int bar = static_cast<int>(offset / TimeDelta::sBar);
+  //  unsigned int barEnd = static_cast<int>(offset / TimeDelta::sBar);
+  while (output.size() <= bar) {
+    output.push_back(ChordSequenceData(TimeDelta::sBar));
+  }
+  output[bar].PushBack(ChordEvent(input, location - TimeDelta::sBar * bar));
+}
+
+template<class OutputType>
+static void
+FillChords(OutputType& output,
+     const ChordSequenceData& input,
+     TimeDelta& location)
+{
+  const ChordSequenceData::SequenceType& sequence = input.GetData();
+  ChordSequenceData::SequenceType::const_iterator it;
+  for (it = sequence.begin(); it != sequence.end(); it++) {
+    FillChords(output, *it, location);
+  }
+  location += input.GetLength();
+}
+
+template<class OutputType>
+static void
+FillChords(OutputType& output,
+     const DataSequence& input,
+     TimeDelta& location)
+{
+  const DataSequence::SequenceType& sequence = input.GetData();
+  DataSequence::SequenceType::const_iterator it;
+  for (it = sequence.begin(); it != sequence.end(); it++) {
+    FillChords(output, *dynamic_cast<ChordSequenceData*>(*it), location);
+  }
+}
+
+const ChordSequenceData&
+Tune::GetChords(int bar, const SongState& state)
+  const
+{
+  ChordsCacheData& data = mChordsCache[state.mLastTime];
+  if (data.intro == NULL) {
+    TimeDelta current = 0;
+    data.intro = new ChordSequenceData(mIntro.GetLength());
+    FillChords(*data.intro, mIntroChords, current);
+    current = 0;
+    FillChords(data.bars, mMainChords, current);
+    if (state.mLastTime) {
+      FillChords(data.bars, mOutroChords, current);
+    } else {
+      FillChords(data.bars, mRepeatChords, current);
+    }
+    assert(data.intro != NULL);
+  }
+  if (bar < 0) {
+    return *data.intro;
+  } else {
+    if ((int) data.bars.size() > bar) {
+      return data.bars[bar];
+    }
+  }
+  return sEmptyChordBar;
+}
+
+const Chord&
+Tune::GetChord(TimeDelta offset, const SongState& state)
+  const
+{
+  const Chord* chord = NULL;
+  for (int i = 0; i < 32; i++) {
+    const ChordSequenceData& data = GetChords(i, state);
+    const ChordSequenceData::SequenceType& chords = data.GetData();
+    ChordSequenceData::SequenceType::const_iterator it;
+    for (it = chords.begin(); it != chords.end(); it++) {
+      const ChordEvent& event = *it;
+      if (event.GetOffset() + TimeDelta::sBar * i <= offset) {
+	chord = &event.GetChord();
+      } else {
+	goto end;
+      }
+    }
+  }
+ end:
+  return *chord;
 }
