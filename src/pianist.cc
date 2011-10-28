@@ -33,7 +33,7 @@ Pianist::GenerateBar(const SongState::BarData& bar, FluidOutputSequence* output,
     for (i = 0; i < 4; i++) {
       TimeDelta offset = TimeDelta::sBar * i / 4;
       if (offset >= bar.mStart && offset < bar.mEnd) {
-	Note octave(60);
+	Note octave(48);
 	int vel = 80;
 	if (bar.mBarNum % 4 == 0 && i == 0) {
 	  vel = 115;
