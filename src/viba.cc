@@ -16,6 +16,7 @@
 #include "fluidOutputSequence.hh"
 #include "timeMgr.hh"
 #include "pianist.hh"
+#include "fiddler.hh"
 
 using namespace std;
 int main(int argc, char* argv[]) {
@@ -25,11 +26,14 @@ int main(int argc, char* argv[]) {
 
   FluidOutputSequence* output = new FluidOutputSequence;
   TimeDelta offset = 0;
-  Instrument* instrument = new Instrument(2);
-  Generator* pianist = new Pianist(instrument);
+  Instrument* instrument = new Instrument(0);
+  Generator* pianist = new Pianist(instrument, false);
+  instrument = new Instrument(1);
+  Generator* fiddler = new Fiddler(instrument, false);
   TimeMgr* timeMgr = new TimeMgr;
   TimeMgr::ID outputId = timeMgr->AddSequence(output);
   timeMgr->AttachGenerator(pianist, outputId);
+  timeMgr->AttachGenerator(fiddler, outputId);
   timeMgr->SetOutput(outputId);
   timeMgr->mSongState.mLastTime = true;
   timeMgr->mSongState.mTune = &tune;

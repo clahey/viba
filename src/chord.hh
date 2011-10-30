@@ -21,6 +21,7 @@ public:
   Note GetFifth(Note octave) const;
 
   bool operator== (Chord other) const { return mBase == other.mBase && mThird == other.mThird && mFifth == other.mFifth; };
+  bool operator!= (Chord other) const { return !(*this == other); };
 
 private:
   int mBase; // 0 - 11, 0 = C, 10 = B flat.

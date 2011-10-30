@@ -7,7 +7,9 @@ viba_SOURCES=viba.cc \
 	dataSequence.cc \
 	instrumentEvent.cc \
 	instrumentSequenceData.cc \
+	fiddler.cc \
 	fluidOutputSequence.cc \
+	musician.cc \
 	note.cc \
 	pianist.cc \
 	sequenceData.cc \

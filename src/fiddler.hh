@@ -1,22 +1,22 @@
 /*
- * pianist.hh
+ * fiddler.hh
  *
  *  Created on: Oct 8, 2011
  *      Author: clahey
  */
 
-#ifndef PIANIST_HH_
-#define PIANIST_HH_
+#ifndef FIDDLER_HH_
+#define FIDDLER_HH_
 
 #include "musician.hh"
 
 /*
  *
  */
-class Pianist : public Musician
+class Fiddler : public Musician
 {
 public:
-  Pianist(Instrument* instrument, bool playMelody = true) : mInstrument(instrument), mPlayMelody(playMelody) {};
+  Fiddler(Instrument* instrument, bool playMelody = true) : mInstrument(instrument), mPlayMelody(playMelody) {};
 
 protected:
   virtual void FillOutput(std::vector<InstrumentEvent>& output, const SongState::BarData& bar, const SongState& state);
@@ -26,4 +26,4 @@ private:
   bool mPlayMelody;
 };
 
-#endif /* PIANIST_HH_ */
+#endif /* FIDDLER_HH_ */

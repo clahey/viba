@@ -28,7 +28,7 @@ OnCallback(unsigned int time,
 FluidOutputSequence::FluidOutputSequence()
   : mSequencerBase(0),
     mTicksBase(0),
-    mBPM(120),
+    mBPM(110),
     mCallbackWaiting(false)
 {
     fluid_settings_t* settings;
@@ -46,9 +46,16 @@ FluidOutputSequence::FluidOutputSequence()
     int fluid_res;
     // put your own path here
     fluid_res = fluid_synth_sfload(mSynth, "/usr/share/sounds/sf2/FluidR3_GM.sf2", 1);
+    //    fluid_res = fluid_synth_sfload(mSynth, "/home/clahey/workspace/viba/12ACGUIT.SF2", 1);
 
     // register myself as second destination
     mMySeqID = fluid_sequencer_register_client(mSequencer, "me", ::OnCallback, this);
+
+    fluid_event_t *evt = new_fluid_event();
+    fluid_event_set_source(evt, -1);
+    fluid_event_set_dest(evt, mSynthSeqID);
+    fluid_event_program_select(evt, 1, 1, 0, 40);
+    fluid_sequencer_send_now(mSequencer, evt);
 }
 
 FluidOutputSequence::~FluidOutputSequence()
