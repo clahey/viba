@@ -28,7 +28,7 @@ OnCallback(unsigned int time,
 FluidOutputSequence::FluidOutputSequence()
   : mSequencerBase(0),
     mTicksBase(0),
-    mBPM(110),
+    mBPM(147),
     mCallbackWaiting(false)
 {
     fluid_settings_t* settings;
@@ -43,9 +43,8 @@ FluidOutputSequence::FluidOutputSequence()
     // register synth as first destination
     mSynthSeqID = fluid_sequencer_register_fluidsynth(mSequencer, mSynth);
 
-    int fluid_res;
     // put your own path here
-    fluid_res = fluid_synth_sfload(mSynth, "/usr/share/sounds/sf2/FluidR3_GM.sf2", 1);
+    fluid_synth_sfload(mSynth, "/usr/share/sounds/sf2/FluidR3_GM.sf2", 1);
     //    fluid_res = fluid_synth_sfload(mSynth, "/home/clahey/workspace/viba/12ACGUIT.SF2", 1);
 
     // register myself as second destination
@@ -54,7 +53,7 @@ FluidOutputSequence::FluidOutputSequence()
     fluid_event_t *evt = new_fluid_event();
     fluid_event_set_source(evt, -1);
     fluid_event_set_dest(evt, mSynthSeqID);
-    fluid_event_program_select(evt, 1, 1, 0, 40);
+    fluid_event_program_select(evt, 1, 1, 0, 110);
     fluid_sequencer_send_now(mSequencer, evt);
 }
 
@@ -118,11 +117,15 @@ FluidOutputSequence::OnCallback(unsigned int time)
 {
   printf ("OnCallback %d\n", time);
   mCallbackWaiting = false;
-  CallbackMap::iterator end = mCallbackMap.upper_bound(MSToTimeDelta(time));
   CallbackMap::iterator it = mCallbackMap.begin();
-  while (it != end) {
-    it->second();
-    mCallbackMap.erase(it++);
+  TimeDelta endtime = MSToTimeDelta(time);
+  while (it != mCallbackMap.end()) {
+    if (it->first < endtime) {
+      it->second();
+      mCallbackMap.erase(it++);
+    } else {
+      break;
+    }
   }
   ScheduleNextTimeout();
 }

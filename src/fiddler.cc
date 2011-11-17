@@ -14,12 +14,19 @@ Fiddler::FillOutput(std::vector<InstrumentEvent>& output, const SongState::BarDa
   const std::vector<NoteEvent>& notes = noteData.GetData();
   for (std::vector<NoteEvent>::const_iterator it = notes.begin(); it != notes.end(); it++) {
     const NoteEvent& noteEvent = *it;
-    int vel = 80;
-    if (bar.mBarNum % 4 == 0 && noteEvent.GetOffset() == 0) {
-      vel = 115;
-    } else if (bar.mBarNum % 2 == 0 && noteEvent.GetOffset() == 0) {
-      vel = 100;
-    }
-    output.push_back(InstrumentEvent(noteEvent, bar.mOffset, mInstrument, vel));
+      int vel = 70;
+      if (noteEvent.GetOffset() == 0) {
+	if (bar.mBarNum % 16 == 0) {
+	  vel = 127;
+	} else if (bar.mBarNum % 8 == 0) {
+	  vel = 105;
+	} else if (bar.mBarNum % 4 == 0) {
+	  vel = 90;
+	}
+      }
+    InstrumentEvent event =
+      InstrumentEvent(noteEvent, bar.mOffset, mInstrument, vel);
+    event.Shorten(TimeDelta::sBar / 512);
+    output.push_back(event);
   }
 }

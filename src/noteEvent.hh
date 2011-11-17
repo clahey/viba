@@ -25,6 +25,11 @@ public:
   TimeDelta GetOffset() const { return mOffset; };
 
   void SetNote(const Note& val) { mNote = val; };
+  void SetLength(TimeDelta val) { mLength = val; };
+  void SetOffset(TimeDelta val) { mOffset = val; };
+
+  void Shorten(TimeDelta amount) { mLength -= std::min(amount, mLength / 2); };
+
 protected:
   Note mNote;
   TimeDelta mLength;

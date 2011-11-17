@@ -15,7 +15,7 @@ Musician::GenerateBar(const SongState::BarData& bar, FluidOutputSequence* output
   for (std::vector<InstrumentEvent>::iterator it = output.begin(); it != output.end(); it++) {
     InstrumentEvent& event = *it;
     if (event.GetOffset() >= bar.mStart + bar.mOffset && event.GetOffset() < bar.mEnd + bar.mOffset) {
-      event.Randomize(1.0/2048);
+      event.Randomize(1.0/1024);
       outputSequence->SendInstrumentEvent(&event);
     }
   }

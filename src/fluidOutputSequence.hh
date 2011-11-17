@@ -37,6 +37,9 @@ public:
   // For internal use from C code.
   void OnCallback(unsigned int time);
 
+  void SetBPM(double newBPM);
+  double GetBPM();
+
 private:
   FluidOutputSequence(const FluidOutputSequence& other) {};
   static const int sSPerM = 60;

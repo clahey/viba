@@ -19,9 +19,9 @@ Pianist::FillOutput(std::vector<InstrumentEvent>& output, const SongState::BarDa
       if (noteEvent.GetOffset() == 0) {
 	if (bar.mBarNum % 16 == 0) {
 	  vel = 127;
-	} else if (bar.mBarNum % 4 == 0) {
+	} else if (bar.mBarNum % 8 == 0) {
 	  vel = 105;
-	} else if (bar.mBarNum % 2 == 0) {
+	} else if (bar.mBarNum % 4 == 0) {
 	  vel = 90;
 	}
       }
