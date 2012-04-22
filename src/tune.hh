@@ -11,9 +11,9 @@
 #include <glibmm/ustring.h>
 #include <map>
 
+#include "chordSequenceData.hh"
 #include "dataSequence.hh"
 #include "simpleSequenceData.hh"
-#include "chordSequenceData.hh"
 #include "types.hh"
 
 /*
@@ -107,8 +107,11 @@ public:
     mRepeatChords = repeatChords;
   }
 
-  const NoteSequenceData& GetNotes(int bar, const SongState& state) const;
-  const ChordSequenceData& GetChords(int bar, const SongState& state) const;
+  const NoteSequenceData& GetNotes(const BarData& bar,
+				   const SongState& state) const;
+  const ChordSequenceData& GetChords(const BarData& bar,
+				     const SongState& state) const;
+  const ChordSequenceData& GetChords(int bar, bool lastTime) const;
   const Chord& GetChord(TimeDelta offset, const SongState& state) const;
 
 private:

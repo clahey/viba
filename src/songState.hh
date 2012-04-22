@@ -11,20 +11,41 @@
 
 #include "tune.hh"
 
+struct BarData {
+  BarData(int barNum, TimeDelta offset, TimeDelta start, TimeDelta end,
+	  Tune* tune, bool lastTime)
+    : mBarNum(barNum),
+      mOffset(offset),
+      mStart(start),
+      mEnd(end),
+      mTune(tune),
+      mLastTime(lastTime)
+  {};
+
+  int mBarNum;
+  TimeDelta mOffset;
+  TimeDelta mStart;
+  TimeDelta mEnd;
+  Tune* mTune;
+  bool mLastTime;
+};
+
+typedef std::vector<BarData> BarList;
+
 struct SongState
 {
-  struct BarData {
-    BarData(int barNum, TimeDelta offset, TimeDelta start, TimeDelta end)
-      : mBarNum(barNum), mOffset(offset), mStart(start), mEnd(end) {};
-    int mBarNum;
-    TimeDelta mOffset;
-    TimeDelta mStart;
-    TimeDelta mEnd;
-  };
-  typedef std::vector<BarData> BarList;
 
-  bool mLastTime;
-  Tune *mTune;
+  struct TuneChange
+  {
+    TuneChange(Tune* tune, int repeatCount)
+      : tune(tune),
+	repeatCount(repeatCount) {};
+    Tune* tune;
+    int repeatCount;
+  };
+  typedef std::vector<TuneChange> TuneList;
+
+  TuneList mTunes;
   TimeDelta mTuneStart;
   TimeDelta mRepeatStart;
 

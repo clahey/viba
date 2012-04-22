@@ -8,10 +8,10 @@
 #include "pianist.hh"
 
 void
-Pianist::FillOutput(std::vector<InstrumentEvent>& output, const SongState::BarData& bar, const SongState& state)
+Pianist::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, const SongState& state)
 {
   if (mPlayMelody) {
-    const NoteSequenceData& noteData = state.mTune->GetNotes(bar.mBarNum, state);
+    const NoteSequenceData& noteData = bar.mTune->GetNotes(bar, state);
     const std::vector<NoteEvent>& notes = noteData.GetData();
     for (std::vector<NoteEvent>::const_iterator it = notes.begin(); it != notes.end(); it++) {
       const NoteEvent& noteEvent = *it;
@@ -42,9 +42,9 @@ Pianist::FillOutput(std::vector<InstrumentEvent>& output, const SongState::BarDa
       } else if (bar.mBarNum % 2 == 0 && i == 0) {
 	vel = 90;
       }
-      const Chord& chord = state.mTune->GetChord(offset + TimeDelta::sBar * bar.mBarNum, state);
+      const Chord& chord = bar.mTune->GetChord(offset + TimeDelta::sBar * bar.mBarNum, state);
       if (i % 2 == 0) {
-	if (i % 4 == 0 || chord != state.mTune->GetChord(TimeDelta::sBar * bar.mBarNum, state)) {
+	if (i % 4 == 0 || chord != bar.mTune->GetChord(TimeDelta::sBar * bar.mBarNum, state)) {
 	  output.push_back(InstrumentEvent(chord.GetBase(octave), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
 	  output.push_back(InstrumentEvent(chord.GetBase(octave + 12), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
 	} else {

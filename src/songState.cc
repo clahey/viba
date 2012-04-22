@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-SongState::BarList
+BarList
 SongState::GetBars(TimeDelta start, TimeDelta end)
   const
 {
@@ -11,6 +11,7 @@ SongState::GetBars(TimeDelta start, TimeDelta end)
   // Since start < barEnd, start gets larger every time through, and since start and end are integers, this loop ends.
   while (start < end) {
     int bar = static_cast<int>((start - mRepeatStart) / TimeDelta::sBar);
+    int repeat;
     TimeDelta barStart;
     TimeDelta barEnd;
     if (bar < 0) {
@@ -24,9 +25,10 @@ SongState::GetBars(TimeDelta start, TimeDelta end)
        * start < mRepeatStart
        * start < barEnd
        */
-      bar = -1;
       barStart = mTuneStart;
       barEnd = mRepeatStart;
+      repeat = -1;
+      bar = -1;
     } else {
       /*
        * bar = floor((start - mRepeatStart) / TimeDelta::sBar)
@@ -40,14 +42,27 @@ SongState::GetBars(TimeDelta start, TimeDelta end)
        */
       barStart = mRepeatStart + TimeDelta::sBar * bar;
       barEnd = mRepeatStart + TimeDelta::sBar * (bar + 1);
-      bar %= 32;
+      repeat = bar / TimeDelta::sBarsPerChange;
+      bar = bar % TimeDelta::sBarsPerChange;
     }
 
-    TimeDelta thisStart = std::max(start - barStart, TimeDelta(0));
-    TimeDelta thisEnd = std::min(end, barEnd) - barStart;
-    if (thisStart < thisEnd) {
-      retval.push_back(BarData(bar, barStart, thisStart, thisEnd));
+    TuneList::const_iterator it = mTunes.begin();
+    int repeatCount = 0;
+    for (it = mTunes.begin(); it != mTunes.end(); it++) {
+      if (repeat < repeatCount + it->repeatCount) {
+	TimeDelta thisStart = std::max(start - barStart, TimeDelta(0));
+	TimeDelta thisEnd = std::min(end, barEnd) - barStart;
+	bool lastTime = repeat == repeatCount + it->repeatCount - 1;
+	if (thisStart < thisEnd) {
+	  retval.push_back(BarData(bar, barStart,
+				   thisStart, thisEnd,
+				   it->tune, lastTime));
+	}
+	break;
+      }
+      repeatCount += it->repeatCount;
     }
+
     start = barEnd;
   }
   return retval;

@@ -57,6 +57,7 @@ public:
   int GetTicks() const { return mTicks; };
 
   static const TimeDelta sBar;
+  static const int sBarsPerChange = 32;
 private:
   int mTicks;
 };

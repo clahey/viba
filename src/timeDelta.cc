@@ -10,6 +10,7 @@
 #include <cstdio>
 
 const TimeDelta TimeDelta::sBar = 128 * 9 * 5;
+const int TimeDelta::sBarsPerChange;
 
 TimeDelta::TimeDelta()
   : mTicks(0)

@@ -25,10 +25,10 @@ public:
 
 protected:
   Tune* mTune;
-  virtual void FillOutput(std::vector<InstrumentEvent>& output, const SongState::BarData& bar, const SongState& state) = 0;
+  virtual void FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, const SongState& state) = 0;
 
 private:
-  void GenerateBar(const SongState::BarData& bar, FluidOutputSequence* output, const SongState& state);
+  void GenerateBar(const BarData& bar, FluidOutputSequence* output, const SongState& state);
 };
 
 #endif /* MUSICIAN_HH_ */

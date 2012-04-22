@@ -8,7 +8,7 @@
 #ifndef GTK_TIMELINE_HH_
 #define GTK_TIMELINE_HH_
 
-#include <gtkmm/drawingarea.h>
+#include <goocanvasmm/canvas.h>
 
 #include "timeDelta.hh"
 #include "outputSequence.hh"
@@ -16,13 +16,10 @@
 /*
  *
  */
-class Timeline : public Gtk::DrawingArea
+class Timeline : public Goocanvas::Canvas
 {
 public:
   Timeline(OutputSequence* output);
-
-protected:
-  virtual bool on_expose_event(GdkEventExpose* event);
 
 private:
   OutputSequence* mOutput;

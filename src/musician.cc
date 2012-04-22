@@ -8,14 +8,14 @@
 #include "musician.hh"
 
 void
-Musician::GenerateBar(const SongState::BarData& bar, FluidOutputSequence* outputSequence, const SongState& state)
+Musician::GenerateBar(const BarData& bar, FluidOutputSequence* outputSequence, const SongState& state)
 {
   std::vector<InstrumentEvent> output;
   FillOutput(output, bar, state);
   for (std::vector<InstrumentEvent>::iterator it = output.begin(); it != output.end(); it++) {
     InstrumentEvent& event = *it;
     if (event.GetOffset() >= bar.mStart + bar.mOffset && event.GetOffset() < bar.mEnd + bar.mOffset) {
-      event.Randomize(1.0/1024);
+      event.Randomize(1.0/512);
       outputSequence->SendInstrumentEvent(&event);
     }
   }
@@ -26,6 +26,6 @@ Musician::Generate(Sequence* dest, TimeDelta start, TimeDelta end, const SongSta
 {
   FluidOutputSequence* output = dynamic_cast<FluidOutputSequence*>(dest);
   assert(output != NULL);
-  SongState::BarList bars = state.GetBars(start, end);
+  BarList bars = state.GetBars(start, end);
   std::for_each (bars.begin(), bars.end(), sigc::bind(sigc::mem_fun(this, &Musician::GenerateBar), output, sigc::ref(state)));
 }

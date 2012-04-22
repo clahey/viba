@@ -1,4 +1,16 @@
+/*
+ * chordSequenceData.hh
+ *
+ *  Created on: Oct 8, 2011
+ *      Author: clahey
+ */
 
+#ifndef CHORDSEQUENCEDATA_HH_
+#define CHORDSEQUENCEDATA_HH_
+
+#include <vector>
+#include "timeDelta.hh"
+#include "simpleSequenceData.hh"
 
 class ChordSequenceData : public SimpleSequenceData<ChordEvent>
 {
@@ -16,3 +28,5 @@ public:
     SimpleSequenceData<ChordEvent>::PushBack(event);
   };
 };
+
+#endif /* CHORDSEQUENCEDATA_HH_ */

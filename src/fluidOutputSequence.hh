@@ -37,8 +37,9 @@ public:
   // For internal use from C code.
   void OnCallback(unsigned int time);
 
-  void SetBPM(double newBPM);
-  double GetBPM();
+  virtual void SetBPM(double newBPM);
+  virtual double GetBPM() { return mBPM; };
+  virtual void SetPivot(TimeDelta pivot);
 
 private:
   FluidOutputSequence(const FluidOutputSequence& other) {};
@@ -47,7 +48,7 @@ private:
   static const int sBeatsPerBar = 2;
 
   TimeDelta MSToTimeDelta(unsigned int ms) {
-    unsigned int ms_offset = ms - mSequencerBase;
+    int ms_offset = ms - mSequencerBase;
     return TimeDelta::sBar * (ms_offset * mBPM / (sSPerM * sMSPerS * sBeatsPerBar)) + mTicksBase;
   };
   unsigned int TimeDeltaToMS(TimeDelta time) {
@@ -61,7 +62,7 @@ private:
   fluid_audio_driver_t* mDriver;
   short mSynthSeqID;
   short mMySeqID;
-  int mSequencerBase;
+  unsigned int mSequencerBase;
   TimeDelta mTicksBase;
   double mBPM;
   typedef std::multimap<TimeDelta, sigc::slot<void> > CallbackMap;

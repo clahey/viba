@@ -7,7 +7,7 @@
 
 #include "tune.hh"
 
-#define BOOST_FILESYSTEM_VERSION 3
+#define BOOST_FILESYSTEM_VERSION 2
 
 #include <assert.h>
 #include <cstdlib>
@@ -257,28 +257,29 @@ Fill(OutputType& output,
 }
 
 const NoteSequenceData&
-Tune::GetNotes(int bar, const SongState& state)
+Tune::GetNotes(const BarData& bar,
+	       const SongState& state)
   const
 {
-  NotesCacheData& data = mNotesCache[state.mLastTime];
+  NotesCacheData& data = mNotesCache[bar.mLastTime];
   if (data.intro == NULL) {
     TimeDelta current = 0;
     data.intro = new NoteSequenceData(mIntro.GetLength());
     Fill(*data.intro, mIntro, current);
     current = 0;
     Fill(data.bars, mMain, current);
-    if (state.mLastTime) {
+    if (bar.mLastTime) {
       Fill(data.bars, mOutro, current);
     } else {
       Fill(data.bars, mRepeat, current);
     }
     assert(data.intro != NULL);
   }
-  if (bar < 0) {
+  if (bar.mBarNum < 0) {
     return *data.intro;
   } else {
-    if ((int) data.bars.size() > bar) {
-      return data.bars[bar];
+    if ((int) data.bars.size() > bar.mBarNum) {
+      return data.bars[bar.mBarNum];
     }
   }
   return sEmptyBar;
@@ -334,17 +335,17 @@ FillChords(OutputType& output,
 }
 
 const ChordSequenceData&
-Tune::GetChords(int bar, const SongState& state)
+Tune::GetChords(int bar, bool lastTime)
   const
 {
-  ChordsCacheData& data = mChordsCache[state.mLastTime];
+  ChordsCacheData& data = mChordsCache[lastTime];
   if (data.intro == NULL) {
     TimeDelta current = 0;
     data.intro = new ChordSequenceData(mIntro.GetLength());
     FillChords(*data.intro, mIntroChords, current);
     current = 0;
     FillChords(data.bars, mMainChords, current);
-    if (state.mLastTime) {
+    if (lastTime) {
       FillChords(data.bars, mOutroChords, current);
     } else {
       FillChords(data.bars, mRepeatChords, current);
@@ -361,13 +362,21 @@ Tune::GetChords(int bar, const SongState& state)
   return sEmptyChordBar;
 }
 
+const ChordSequenceData&
+Tune::GetChords(const BarData& bar,
+		const SongState& state)
+  const
+{
+  return GetChords(bar.mBarNum, bar.mLastTime);
+}
+
 const Chord&
 Tune::GetChord(TimeDelta offset, const SongState& state)
   const
 {
   const Chord* chord = NULL;
   for (int i = 0; i < 32; i++) {
-    const ChordSequenceData& data = GetChords(i, state);
+    const ChordSequenceData& data = GetChords(i, false);
     const ChordSequenceData::SequenceType& chords = data.GetData();
     ChordSequenceData::SequenceType::const_iterator it;
     for (it = chords.begin(); it != chords.end(); it++) {

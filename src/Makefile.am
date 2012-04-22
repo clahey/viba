@@ -17,6 +17,7 @@ viba_SOURCES=viba.cc \
 	timeDelta.cc \
 	timeMgr.cc \
 	tune.cc \
+	gtk/currentTimeItem.cc \
 	gtk/timeline.cc
 
 viba_LDADD = $(VIBA_LIBS) $(BOOST_LDFLAGS) $(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)

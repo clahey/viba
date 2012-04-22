@@ -8,6 +8,7 @@
 #ifndef TYPES_HH_
 #define TYPES_HH_
 
-class SongState;
+struct SongState;
+struct BarData;
 
 #endif /* TYPES_HH_ */

@@ -8,13 +8,14 @@
 #include "fiddler.hh"
 
 void
-Fiddler::FillOutput(std::vector<InstrumentEvent>& output, const SongState::BarData& bar, const SongState& state)
+Fiddler::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, const SongState& state)
 {
-  const NoteSequenceData& noteData = state.mTune->GetNotes(bar.mBarNum, state);
+  const NoteSequenceData& noteData = bar.mTune->GetNotes(bar, state);
   const std::vector<NoteEvent>& notes = noteData.GetData();
   for (std::vector<NoteEvent>::const_iterator it = notes.begin(); it != notes.end(); it++) {
     const NoteEvent& noteEvent = *it;
       int vel = 70;
+#if 0
       if (noteEvent.GetOffset() == 0) {
 	if (bar.mBarNum % 16 == 0) {
 	  vel = 127;
@@ -24,6 +25,7 @@ Fiddler::FillOutput(std::vector<InstrumentEvent>& output, const SongState::BarDa
 	  vel = 90;
 	}
       }
+#endif
     InstrumentEvent event =
       InstrumentEvent(noteEvent, bar.mOffset, mInstrument, vel);
     event.Shorten(TimeDelta::sBar / 512);

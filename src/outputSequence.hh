@@ -18,6 +18,9 @@
 class OutputSequence : public virtual Sequence
 {
 public:
+  virtual void SetBPM(double bpm) = 0;
+  virtual double GetBPM() = 0;
+  virtual void SetPivot(TimeDelta pivot) = 0;
   virtual TimeDelta GetCurrentTime() = 0;
   virtual void ScheduleCallback(TimeDelta offset, sigc::slot<void> callback) = 0;
 };

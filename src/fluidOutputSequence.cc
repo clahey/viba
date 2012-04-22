@@ -20,7 +20,6 @@ OnCallback(unsigned int time,
 	   void* data)
 {
   FluidOutputSequence* sequence = static_cast<FluidOutputSequence*>(data);
-  printf("::OnCallback: %d\n", time);
   assert(sequence != NULL);
   Glib::signal_idle().connect_once(sigc::bind(sigc::mem_fun(sequence, &FluidOutputSequence::OnCallback), time));
 }
@@ -28,7 +27,7 @@ OnCallback(unsigned int time,
 FluidOutputSequence::FluidOutputSequence()
   : mSequencerBase(0),
     mTicksBase(0),
-    mBPM(147),
+    mBPM(120),
     mCallbackWaiting(false)
 {
     fluid_settings_t* settings;
@@ -101,6 +100,7 @@ void
 FluidOutputSequence::ScheduleNextTimeout()
 {
   if (!mCallbackMap.empty() && !mCallbackWaiting) {
+    printf ("Scheduling Next Timeout for %d(%d)\n", TimeDeltaToMS(mCallbackMap.begin()->first), mCallbackMap.begin()->first.GetTicks());
     fluid_event_t *evt = new_fluid_event();
     fluid_event_set_source(evt, -1);
     fluid_event_set_dest(evt, mMySeqID);
@@ -115,17 +115,27 @@ FluidOutputSequence::ScheduleNextTimeout()
 void
 FluidOutputSequence::OnCallback(unsigned int time)
 {
-  printf ("OnCallback %d\n", time);
-  mCallbackWaiting = false;
+  printf("OnCallback: %d\n", time);
   CallbackMap::iterator it = mCallbackMap.begin();
-  TimeDelta endtime = MSToTimeDelta(time);
-  while (it != mCallbackMap.end()) {
-    if (it->first < endtime) {
-      it->second();
-      mCallbackMap.erase(it++);
-    } else {
-      break;
-    }
+  TimeDelta currentTime = MSToTimeDelta(time);
+  while (it != mCallbackMap.end() && it->first <= currentTime) {
+    it->second();
+    mCallbackMap.erase(it++);
   }
+  mCallbackWaiting = false;
   ScheduleNextTimeout();
+}
+
+void
+FluidOutputSequence::SetBPM(double bpm)
+{
+  printf ("SetBPM(%f)\n", bpm);
+  mBPM = bpm;
+}
+
+void
+FluidOutputSequence::SetPivot(TimeDelta pivot)
+{
+  mSequencerBase = TimeDeltaToMS(pivot);
+  mTicksBase = pivot;
 }
