@@ -9,6 +9,7 @@
 #ifndef SONGSTATE_HH_
 #define SONGSTATE_HH_
 
+#include "property.hh"
 #include "tune.hh"
 
 struct BarData {
@@ -42,10 +43,15 @@ struct SongState
 	repeatCount(repeatCount) {};
     Tune* tune;
     int repeatCount;
+
+    bool operator==(const TuneChange& other) const {
+      return tune == other.tune && repeatCount == other.repeatCount;
+    }
   };
   typedef std::vector<TuneChange> TuneList;
 
-  TuneList mTunes;
+  Property<TuneList> pTunes;
+
   TimeDelta mTuneStart;
   TimeDelta mRepeatStart;
 

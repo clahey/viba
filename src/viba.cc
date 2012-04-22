@@ -27,8 +27,13 @@ using namespace std;
 int main(int argc, char* argv[]) {
   Gtk::Main main(argc, argv);
 
-  Tune tune;
-  tune.Parse(argv[1]);
+  Tune tune1;
+  tune1.Parse(argv[1]);
+  Tune tune2;
+  tune2.Parse(argv[2]);
+  SongState::TuneList tunes;
+  tunes.push_back(SongState::TuneChange(&tune1, 2));
+  tunes.push_back(SongState::TuneChange(&tune2, 2));
 
   FluidOutputSequence* output = new FluidOutputSequence;
   Instrument* instrument = new Instrument(0);
@@ -40,12 +45,12 @@ int main(int argc, char* argv[]) {
   timeMgr->AttachGenerator(pianist, outputId);
   timeMgr->AttachGenerator(fiddler, outputId);
   timeMgr->SetOutput(outputId);
-  timeMgr->mSongState.mTunes.push_back(SongState::TuneChange(&tune, 15));
+  timeMgr->mSongState.pTunes = tunes;
   timeMgr->Start();
 
   Gtk::Window* window = new Gtk::Window();
   Gtk::VBox* vbox = Gtk::manage(new Gtk::VBox());
-  Gtk::Widget* timeline = Gtk::manage(new Timeline(output));
+  Gtk::Widget* timeline = Gtk::manage(new Timeline(output, &timeMgr->mSongState));
   Gtk::SpinButton* spinbutton = Gtk::manage(new Gtk::SpinButton());
   Gtk::Adjustment* adjustment = spinbutton->get_adjustment();
   adjustment->set_lower(10);

@@ -10,7 +10,6 @@
 
 #include <goocanvasmm/polyline.h>
 
-#include "timeDelta.hh"
 #include "outputSequence.hh"
 
 /*

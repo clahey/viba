@@ -10,30 +10,29 @@
 #include <goocanvasmm/polyline.h>
 #include <iostream>
 
+#include "gtk/constants.hh"
+
 using namespace std;
 
-ChangeMarkers::ChangeMarkers(OutputSequence* output)
-  : Polyline(0, 0, 0, 0),
-    mOutput(output)
+ChangeMarkers::ChangeMarkers(SongState *state)
+  : Group(),
+    mState(state)
 {
-  SetPosition();
+  TimeDelta delta = mState->mRepeatStart;
+  const SongState::TuneList& tunes = mState->pTunes;
+  SongState::TuneList::const_iterator it = tunes.begin();
+  for (it = tunes.begin(); it != tunes.end(); it++) {
+    for (int i = 0; i < it->repeatCount; i++) {
+      AddLine(Constants::TimeDeltaToPixels(delta));
+      delta += TimeDelta::sBar * TimeDelta::sBarsPerChange;
+    }
+  }
+  AddLine(Constants::TimeDeltaToPixels(delta));
 }
 
-const static int sSubPixelsPerPixel = 4;
-const static int sPixelsPerChange = 100;
-
 void
-ChangeMarkers::SetPosition()
+ChangeMarkers::AddLine(int position)
 {
-  int position = mOutput->GetCurrentTime()
-    * sSubPixelsPerPixel * sPixelsPerChange / TimeDelta::sBarsPerChange
-    / TimeDelta::sBar;
-  Goocanvas::Points points = property_points();
-  points.set_coordinate(0, position / (float) sSubPixelsPerPixel, 0);
-  points.set_coordinate(1, position / (float) sSubPixelsPerPixel, 100);
-  property_points() = points;
-  TimeDelta nextTime = TimeDelta::sBar * (position + 1)
-    * TimeDelta::sBarsPerChange / sPixelsPerChange / sSubPixelsPerPixel + 1;
-  mOutput->ScheduleCallback(nextTime, 
-			    sigc::mem_fun(this, &ChangeMarkers::SetPosition));
+  add_child(Goocanvas::Polyline::create(position, 0,
+					position, Constants::sHeight));
 }

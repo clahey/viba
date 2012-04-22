@@ -8,10 +8,9 @@
 #ifndef GTK_CHANGE_MARKERS_HH_
 #define GTK_CHANGE_MARKERS_HH_
 
-#include <goocanvasmm/itemgroup.h>
+#include <goocanvasmm/group.h>
 
-#include "timeDelta.hh"
-#include "outputSequence.hh"
+#include "songState.hh"
 
 /*
  *
@@ -23,6 +22,8 @@ public:
 
 private:
   SongState* mState;
+
+  void AddLine(int position);
 };
 
 #endif /* GTK_CHANGE_MARKERS_HH_ */

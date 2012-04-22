@@ -10,6 +10,8 @@
 #include <goocanvasmm/polyline.h>
 #include <iostream>
 
+#include "gtk/constants.hh"
+
 using namespace std;
 
 CurrentTimeItem::CurrentTimeItem(OutputSequence* output)
@@ -20,20 +22,20 @@ CurrentTimeItem::CurrentTimeItem(OutputSequence* output)
 }
 
 const static int sSubPixelsPerPixel = 4;
-const static int sPixelsPerChange = 100;
 
 void
 CurrentTimeItem::SetPosition()
 {
-  int position = mOutput->GetCurrentTime()
-    * sSubPixelsPerPixel * sPixelsPerChange / TimeDelta::sBarsPerChange
-    / TimeDelta::sBar;
+  int position = Constants::TimeDeltaToPixels(mOutput->GetCurrentTime(),
+					      sSubPixelsPerPixel);
   Goocanvas::Points points = property_points();
   points.set_coordinate(0, position / (float) sSubPixelsPerPixel, 0);
-  points.set_coordinate(1, position / (float) sSubPixelsPerPixel, 100);
+  points.set_coordinate(1,
+			position / (float) sSubPixelsPerPixel,
+			Constants::sHeight);
   property_points() = points;
-  TimeDelta nextTime = TimeDelta::sBar * (position + 1)
-    * TimeDelta::sBarsPerChange / sPixelsPerChange / sSubPixelsPerPixel + 1;
+  TimeDelta nextTime = Constants::PixelsToTimeDelta(position + 1,
+						    sSubPixelsPerPixel);
   mOutput->ScheduleCallback(nextTime, 
 			    sigc::mem_fun(this, &CurrentTimeItem::SetPosition));
 }

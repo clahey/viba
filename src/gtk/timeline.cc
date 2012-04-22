@@ -9,13 +9,18 @@
 
 #include <iostream>
 
+#include "gtk/changeMarkers.hh"
 #include "gtk/currentTimeItem.hh"
 
 using namespace std;
 
-Timeline::Timeline(OutputSequence* output)
-  : mOutput(output)
+Timeline::Timeline(OutputSequence* output, SongState* state)
+  : mOutput(output),
+    mState(state)
 {
-  Glib::RefPtr<CurrentTimeItem> item = Glib::RefPtr<CurrentTimeItem>(new CurrentTimeItem(mOutput));
-  get_root_item()->add_child(item);
+  Glib::RefPtr<Goocanvas::Item> root = get_root_item();
+  root->add_child
+    (Glib::RefPtr<CurrentTimeItem>(new CurrentTimeItem(mOutput)));
+  root->add_child
+    (Glib::RefPtr<ChangeMarkers>(new ChangeMarkers(mState)));
 }

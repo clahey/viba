@@ -46,9 +46,9 @@ SongState::GetBars(TimeDelta start, TimeDelta end)
       bar = bar % TimeDelta::sBarsPerChange;
     }
 
-    TuneList::const_iterator it = mTunes.begin();
+    TuneList::const_iterator it = pTunes.Get().begin();
     int repeatCount = 0;
-    for (it = mTunes.begin(); it != mTunes.end(); it++) {
+    for (it = pTunes.Get().begin(); it != pTunes.Get().end(); it++) {
       if (repeat < repeatCount + it->repeatCount) {
 	TimeDelta thisStart = std::max(start - barStart, TimeDelta(0));
 	TimeDelta thisEnd = std::min(end, barEnd) - barStart;

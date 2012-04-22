@@ -11,6 +11,7 @@
 #include <goocanvasmm/canvas.h>
 
 #include "timeDelta.hh"
+#include "songState.hh"
 #include "outputSequence.hh"
 
 /*
@@ -19,10 +20,11 @@
 class Timeline : public Goocanvas::Canvas
 {
 public:
-  Timeline(OutputSequence* output);
+  Timeline(OutputSequence* output, SongState* state);
 
 private:
   OutputSequence* mOutput;
+  SongState* mState;
 };
 
 #endif /* GTK_TIMELINE_HH_ */
