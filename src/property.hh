@@ -36,7 +36,7 @@ public:
     return mData;
   }
 
-  sigc::slot<void> changed;
+  sigc::signal<void> changed;
 
 private:
   T mData;

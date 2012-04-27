@@ -9,7 +9,10 @@
 #define GTK_CHANGE_MARKERS_HH_
 
 #include <goocanvasmm/group.h>
+#include <utility>
+#include <vector>
 
+#include "gtk/changeMark.hh"
 #include "songState.hh"
 
 /*
@@ -21,8 +24,13 @@ public:
   ChangeMarkers(SongState* state);
 
 private:
-  SongState* mState;
+  typedef std::vector<Glib::RefPtr<ChangeMark> > ItemVector;
 
+  SongState* mState;
+  ItemVector mItemVector;
+
+  void Build();
+  void OnRequestPosition(int position, int tune);
   void AddLine(int position);
 };
 

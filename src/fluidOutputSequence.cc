@@ -73,14 +73,14 @@ FluidOutputSequence::SendInstrumentEvent(InstrumentEvent* event)
     fluid_event_set_dest(evt, mSynthSeqID);
     fluid_event_noteon(evt, event->GetInstrument()->GetChannel(), event->GetNote().GetMidiNote(), event->GetVelocity());
     fluid_res = fluid_sequencer_send_at(mSequencer, evt, TimeDeltaToMS(event->GetOffset()), TRUE);
-    printf("Note %d starts at %d (%d)\n", event->GetNote().GetMidiNote(), TimeDeltaToMS(event->GetOffset()), event->GetOffset().GetTicks());
+    //    printf("Note %d starts at %d (%d)\n", event->GetNote().GetMidiNote(), TimeDeltaToMS(event->GetOffset()), event->GetOffset().GetTicks());
     if (fluid_res == FLUID_FAILED) {
       delete_fluid_event(evt);
       return false;
     }
     fluid_event_noteoff(evt, event->GetInstrument()->GetChannel(), event->GetNote().GetMidiNote());
     fluid_res = fluid_sequencer_send_at(mSequencer, evt, TimeDeltaToMS(event->GetOffset() + event->GetLength()), TRUE);
-    printf("Note %d ends at %d\n", event->GetNote().GetMidiNote(), TimeDeltaToMS(event->GetOffset() + event->GetLength()));
+    //    printf("Note %d ends at %d\n", event->GetNote().GetMidiNote(), TimeDeltaToMS(event->GetOffset() + event->GetLength()));
     if (fluid_res == FLUID_FAILED) {
       delete_fluid_event(evt);
       return false;
@@ -100,7 +100,7 @@ void
 FluidOutputSequence::ScheduleNextTimeout()
 {
   if (!mCallbackMap.empty() && !mCallbackWaiting) {
-    printf ("Scheduling Next Timeout for %d(%d)\n", TimeDeltaToMS(mCallbackMap.begin()->first), mCallbackMap.begin()->first.GetTicks());
+    //    printf ("Scheduling Next Timeout for %d(%d)\n", TimeDeltaToMS(mCallbackMap.begin()->first), mCallbackMap.begin()->first.GetTicks());
     fluid_event_t *evt = new_fluid_event();
     fluid_event_set_source(evt, -1);
     fluid_event_set_dest(evt, mMySeqID);
@@ -115,7 +115,7 @@ FluidOutputSequence::ScheduleNextTimeout()
 void
 FluidOutputSequence::OnCallback(unsigned int time)
 {
-  printf("OnCallback: %d\n", time);
+  //  printf("OnCallback: %d\n", time);
   CallbackMap::iterator it = mCallbackMap.begin();
   TimeDelta currentTime = MSToTimeDelta(time);
   while (it != mCallbackMap.end() && it->first <= currentTime) {
@@ -129,7 +129,7 @@ FluidOutputSequence::OnCallback(unsigned int time)
 void
 FluidOutputSequence::SetBPM(double bpm)
 {
-  printf ("SetBPM(%f)\n", bpm);
+  //  printf ("SetBPM(%f)\n", bpm);
   mBPM = bpm;
 }
 

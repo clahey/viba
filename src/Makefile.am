@@ -18,6 +18,7 @@ viba_SOURCES=viba.cc \
 	timeMgr.cc \
 	tune.cc \
 	gtk/changeMarkers.cc \
+	gtk/changeMark.cc \
 	gtk/constants.cc \
 	gtk/currentTimeItem.cc \
 	gtk/timeline.cc

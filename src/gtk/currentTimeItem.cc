@@ -35,7 +35,7 @@ CurrentTimeItem::SetPosition()
 			Constants::sHeight);
   property_points() = points;
   TimeDelta nextTime = Constants::PixelsToTimeDelta(position + 1,
-						    sSubPixelsPerPixel);
+						    sSubPixelsPerPixel) + 1;
   mOutput->ScheduleCallback(nextTime, 
 			    sigc::mem_fun(this, &CurrentTimeItem::SetPosition));
 }
