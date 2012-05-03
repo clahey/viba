@@ -114,6 +114,8 @@ public:
   const ChordSequenceData& GetChords(int bar, bool lastTime) const;
   const Chord& GetChord(TimeDelta offset, const SongState& state) const;
 
+  const Glib::ustring& GetName() const { return mName; };
+
 private:
   static NoteSequenceData sEmptyBar;
   static ChordSequenceData sEmptyChordBar;
@@ -141,6 +143,7 @@ private:
   };
   typedef std::map<bool, ChordsCacheData> ChordsCache;
   mutable ChordsCache mChordsCache;
+  Glib::ustring mName;
 };
 
 #endif /* TUNE_HH_ */

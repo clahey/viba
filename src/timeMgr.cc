@@ -2,7 +2,9 @@
 #include "timeMgr.hh"
 
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
+
+#include "tune.hh"
 
 const TimeMgr::ID TimeMgr::sInvalid;
 

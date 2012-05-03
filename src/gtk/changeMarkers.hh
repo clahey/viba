@@ -23,6 +23,10 @@ class ChangeMarkers : public Goocanvas::Group
 public:
   ChangeMarkers(SongState* state);
 
+  // const please
+  Property<int> pHeight;
+  Property<int> pWidth;
+
 private:
   typedef std::vector<Glib::RefPtr<ChangeMark> > ItemVector;
 
@@ -32,6 +36,9 @@ private:
   void Build();
   void OnRequestPosition(int position, int tune);
   void AddLine(int position);
+  void AddText(int position, int number, bool top = false, double scale = 1);
+  void AddText(int position, const Glib::ustring& string,
+	       bool top = false, double scale = 1);
 };
 
 #endif /* GTK_CHANGE_MARKERS_HH_ */

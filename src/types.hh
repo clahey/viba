@@ -10,5 +10,7 @@
 
 struct SongState;
 struct BarData;
+struct OutputSequence;
+struct Tune;
 
 #endif /* TYPES_HH_ */

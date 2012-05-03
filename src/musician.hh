@@ -11,8 +11,7 @@
 #include "generator.hh"
 #include "instrumentSequenceData.hh"
 #include "fluidOutputSequence.hh"
-#include "songState.hh"
-#include "tune.hh"
+#include "types.hh"
 
 /*
  *

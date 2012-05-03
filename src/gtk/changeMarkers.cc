@@ -8,15 +8,20 @@
 #include "changeMarkers.hh"
 
 #include <goocanvasmm/polyline.h>
+#include <goocanvasmm/text.h>
 #include <iostream>
+#include <sstream>
 
 #include "gtk/changeMark.hh"
 #include "gtk/constants.hh"
+#include "tune.hh"
 
 using namespace std;
 
 ChangeMarkers::ChangeMarkers(SongState *state)
   : Group(),
+    pHeight(100),
+    pWidth(10),
     mState(state)
 {
   sigc::slot<void> build = sigc::mem_fun(this, &ChangeMarkers::Build);
@@ -38,8 +43,10 @@ ChangeMarkers::Build()
   int change = 0;
   int tune = 0;
   for (it = tunes.begin(); it != tunes.end(); it++) {
+    AddText(Constants::TimeDeltaToPixels(delta), it->tune->GetName(), true, .5);
     for (int i = 0; i < it->repeatCount; i++) {
       AddLine(Constants::TimeDeltaToPixels(delta));
+      AddText(Constants::TimeDeltaToPixels(delta), change + 1);
       delta += TimeDelta::sBar * TimeDelta::sBarsPerChange;
       change++;
     }
@@ -52,6 +59,7 @@ ChangeMarkers::Build()
     tune ++;
   }
   AddLine(Constants::TimeDeltaToPixels(delta));
+  pWidth = Constants::TimeDeltaToPixels(delta) + 6;
 }
 
 void
@@ -59,6 +67,37 @@ ChangeMarkers::AddLine(int position)
 {
   add_child(Goocanvas::Polyline::create(position, 0,
 					position, Constants::sHeight));
+}
+
+void
+ChangeMarkers::AddText(int position, int number, bool top, double scale)
+{
+  ostringstream output;
+  output << number;
+  AddText(position, output.str(), top, scale);
+}
+
+static const int sPadding = 7;
+
+void
+ChangeMarkers::AddText(int position,
+		       const Glib::ustring& string,
+		       bool top,
+		       double scale)
+{
+  Glib::RefPtr<Goocanvas::Text> text = Goocanvas::Text::create(string);
+  if (top) {
+    text->translate(position + sPadding, 0);
+  } else {
+    text->property_anchor() = Gtk::ANCHOR_SOUTH_WEST;
+    text->translate(position + sPadding, 100);
+  }
+
+  text->property_width() = (100 - sPadding * 2) / scale;
+  text->property_ellipsize() = Pango::ELLIPSIZE_END;
+  //  text->property_wrap() = Pango::WRAP_WORD;
+  text->scale(scale, scale);
+  add_child(text);
 }
 
 void

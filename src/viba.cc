@@ -14,6 +14,7 @@
 #include <gtkmm/adjustment.h>
 #include <gtkmm/box.h>
 #include <gtkmm/main.h>
+#include <gtkmm/scrolledwindow.h>
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/window.h>
 
@@ -21,6 +22,7 @@
 #include "timeMgr.hh"
 #include "pianist.hh"
 #include "fiddler.hh"
+#include "tune.hh"
 #include "gtk/timeline.hh"
 
 using namespace std;
@@ -47,10 +49,20 @@ int main(int argc, char* argv[]) {
   timeMgr->SetOutput(outputId);
   timeMgr->mSongState.pTunes = tunes;
   timeMgr->Start();
+  timeMgr->mSongState.pVolume.AddRange(timeMgr->mSongState.mRepeatStart,
+				       timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * TimeDelta::sBarsPerChange,
+				       .2);
+  timeMgr->mSongState.pVolume.AddRange(timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * TimeDelta::sBarsPerChange,
+				       timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * TimeDelta::sBarsPerChange * 2,
+				       1);
 
   Gtk::Window* window = new Gtk::Window();
   Gtk::VBox* vbox = Gtk::manage(new Gtk::VBox());
-  Gtk::Widget* timeline = Gtk::manage(new Timeline(output, &timeMgr->mSongState));
+  Gtk::Widget* timeline =
+    Gtk::manage(new Timeline(output, &timeMgr->mSongState));
+  Gtk::ScrolledWindow* scrolled = Gtk::manage(new Gtk::ScrolledWindow());
+  scrolled->set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
+  timeline->set_size_request(250, 100);
   Gtk::SpinButton* spinbutton = Gtk::manage(new Gtk::SpinButton());
   Gtk::Adjustment* adjustment = spinbutton->get_adjustment();
   adjustment->set_lower(10);
@@ -60,10 +72,14 @@ int main(int argc, char* argv[]) {
   adjustment->set_value(output->GetBPM());
   adjustment->signal_value_changed().connect(sigc::compose(sigc::mem_fun(output, &FluidOutputSequence::SetBPM),
 							   sigc::mem_fun(adjustment, &Gtk::Adjustment::get_value)));
-  vbox->pack_start(*timeline, Gtk::PACK_EXPAND_WIDGET);
+
+  scrolled->add(*timeline);
+  vbox->pack_start(*scrolled, Gtk::PACK_EXPAND_WIDGET);
   vbox->pack_start(*spinbutton, Gtk::PACK_SHRINK);
+
   window->add(*vbox);
   vbox->show();
+  scrolled->show();
   timeline->show();
   spinbutton->show();
   window->show();

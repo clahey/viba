@@ -10,9 +10,8 @@
 
 #include <goocanvasmm/canvas.h>
 
-#include "timeDelta.hh"
-#include "songState.hh"
-#include "outputSequence.hh"
+#include "types.hh"
+#include "gtk/gtkTypes.hh"
 
 /*
  *
@@ -25,6 +24,9 @@ public:
 private:
   OutputSequence* mOutput;
   SongState* mState;
+  Glib::RefPtr<ChangeMarkers> mChangeMarkers;
+  
+  void Resize();
 };
 
 #endif /* GTK_TIMELINE_HH_ */

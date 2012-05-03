@@ -9,8 +9,11 @@
 #ifndef SONGSTATE_HH_
 #define SONGSTATE_HH_
 
+#include <vector>
+
 #include "property.hh"
-#include "tune.hh"
+#include "timeDelta.hh"
+#include "types.hh"
 
 struct BarData {
   BarData(int barNum, TimeDelta offset, TimeDelta start, TimeDelta end,
@@ -33,14 +36,42 @@ struct BarData {
 
 typedef std::vector<BarData> BarList;
 
+class
+Event
+{
+public:
+  virtual ~Event() {};
+
+  Property<TimeDelta> pStart;
+  Property<TimeDelta> pEnd;
+};
+
+class
+CrecendoEvent : public Event
+{
+  
+};
+
+class
+MusicProperty
+{
+public:
+  virtual ~MusicProperty () {};
+
+protected:
+  MusicProperty() {};
+};
+
 struct SongState
 {
+  SongState();
 
   struct TuneChange
   {
     TuneChange(Tune* tune, int repeatCount)
       : tune(tune),
 	repeatCount(repeatCount) {};
+
     Tune* tune;
     int repeatCount;
 
@@ -51,6 +82,7 @@ struct SongState
   typedef std::vector<TuneChange> TuneList;
 
   Property<TuneList> pTunes;
+  InterpolatedProperty<double> pVolume;
 
   TimeDelta mTuneStart;
   TimeDelta mRepeatStart;

@@ -7,6 +7,8 @@
 
 #include "fiddler.hh"
 
+#include "tune.hh"
+
 void
 Fiddler::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, const SongState& state)
 {
@@ -14,18 +16,19 @@ Fiddler::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, co
   const std::vector<NoteEvent>& notes = noteData.GetData();
   for (std::vector<NoteEvent>::const_iterator it = notes.begin(); it != notes.end(); it++) {
     const NoteEvent& noteEvent = *it;
-      int vel = 70;
+    int vel = 70;
 #if 0
-      if (noteEvent.GetOffset() == 0) {
-	if (bar.mBarNum % 16 == 0) {
-	  vel = 127;
-	} else if (bar.mBarNum % 8 == 0) {
-	  vel = 105;
-	} else if (bar.mBarNum % 4 == 0) {
-	  vel = 90;
-	}
+    if (noteEvent.GetOffset() == 0) {
+      if (bar.mBarNum % 16 == 0) {
+	vel = 127;
+      } else if (bar.mBarNum % 8 == 0) {
+	vel = 105;
+      } else if (bar.mBarNum % 4 == 0) {
+	vel = 90;
       }
+    }
 #endif
+    vel *= state.pVolume.Get(bar.mStart + bar.mOffset + noteEvent.GetOffset());
     InstrumentEvent event =
       InstrumentEvent(noteEvent, bar.mOffset, mInstrument, vel);
     event.Shorten(TimeDelta::sBar / 512);

@@ -3,6 +3,11 @@
 
 #include <algorithm>
 
+SongState::SongState()
+ : pVolume(1)
+{
+}
+
 BarList
 SongState::GetBars(TimeDelta start, TimeDelta end)
   const

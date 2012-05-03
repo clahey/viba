@@ -136,6 +136,15 @@ Tune::Parse(const Glib::ustring& xmlFile)
   }
   while (reader.get_depth() == 1) {
     Glib::ustring section = reader.get_name();
+    if (section == "name") {
+      ret = Next(reader, xmlpp::TextReader::Text, false);
+      if (!ret) {
+	return false;
+      }
+      mName = reader.get_value();
+      Next(reader);
+      continue;
+    }
     Glib::ustring lengthString = reader.get_attribute("length");
     double length = 0;
     if (!lengthString.empty()) {

@@ -7,6 +7,8 @@
 
 #include "pianist.hh"
 
+#include "tune.hh"
+
 void
 Pianist::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, const SongState& state)
 {
@@ -25,6 +27,7 @@ Pianist::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, co
 	  vel = 90;
 	}
       }
+      vel *= state.pVolume.Get(bar.mStart + bar.mOffset + noteEvent.GetOffset());
       output.push_back(InstrumentEvent(noteEvent, bar.mOffset, mInstrument, vel));
     }
   }
@@ -42,6 +45,7 @@ Pianist::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, co
       } else if (bar.mBarNum % 2 == 0 && i == 0) {
 	vel = 90;
       }
+      vel *= state.pVolume.Get(bar.mStart + bar.mOffset + offset);
       const Chord& chord = bar.mTune->GetChord(offset + TimeDelta::sBar * bar.mBarNum, state);
       if (i % 2 == 0) {
 	if (i % 4 == 0 || chord != bar.mTune->GetChord(TimeDelta::sBar * bar.mBarNum, state)) {
