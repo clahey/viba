@@ -19,7 +19,7 @@ public:
   Fiddler(Instrument* instrument, bool playMelody = true) : mInstrument(instrument), mPlayMelody(playMelody) {};
 
 protected:
-  virtual void FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, const SongState& state);
+  virtual void FillOutput(std::vector<InstrumentEventPtr>& output, const BarData& bar, const SongState& state);
 
 private:
   Instrument* mInstrument;

@@ -23,6 +23,8 @@ public:
   virtual void SetPivot(TimeDelta pivot) = 0;
   virtual TimeDelta GetCurrentTime() = 0;
   virtual void ScheduleCallback(TimeDelta offset, sigc::slot<void> callback) = 0;
+  virtual void Play() = 0;
+  virtual void Pause() = 0;
 };
 
 #endif /* OUTPUTSEQUENCE_HH_ */

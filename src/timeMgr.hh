@@ -20,7 +20,9 @@ public:
   ID AttachGenerator(Generator* generator, ID dest);
   //  ID AttachTranslator(Translator* translator, ID src, ID dest);
   void SetOutput(ID output);
-  void Start();
+  void Ready();
+  void Play();
+  void Pause();
 
   SongState mSongState;
 

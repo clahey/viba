@@ -10,13 +10,13 @@
 #include "tune.hh"
 
 void
-Fiddler::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, const SongState& state)
+Fiddler::FillOutput(std::vector<InstrumentEventPtr>& output, const BarData& bar, const SongState& state)
 {
   const NoteSequenceData& noteData = bar.mTune->GetNotes(bar, state);
   const std::vector<NoteEvent>& notes = noteData.GetData();
   for (std::vector<NoteEvent>::const_iterator it = notes.begin(); it != notes.end(); it++) {
     const NoteEvent& noteEvent = *it;
-    int vel = 70;
+    int vel = 100;
 #if 0
     if (noteEvent.GetOffset() == 0) {
       if (bar.mBarNum % 16 == 0) {
@@ -29,9 +29,8 @@ Fiddler::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, co
     }
 #endif
     vel *= state.pVolume.Get(bar.mStart + bar.mOffset + noteEvent.GetOffset());
-    InstrumentEvent event =
-      InstrumentEvent(noteEvent, bar.mOffset, mInstrument, vel);
-    event.Shorten(TimeDelta::sBar / 512);
+    InstrumentEventPtr event = InstrumentEvent::create(noteEvent, bar.mOffset, mInstrument, vel);
+    event->Shorten(TimeDelta::sBar / 512);
     output.push_back(event);
   }
 }

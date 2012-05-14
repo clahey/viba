@@ -28,6 +28,7 @@ ChangeMark::ChangeMark(SongState *state)
   signal_button_release_event().connect(sigc::mem_fun(this, &ChangeMark::OnButtonReleaseEvent));
   signal_motion_notify_event().connect(sigc::mem_fun(this, &ChangeMark::OnMotionNotifyEvent));
   add_child(mBar);
+  property_fill_color() = "grey";
 }
 
 void

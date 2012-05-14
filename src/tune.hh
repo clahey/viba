@@ -22,7 +22,7 @@
 class Tune
 {
 public:
-  Tune();
+  static TunePtr create();
   virtual ~Tune();
 
   bool Parse(const Glib::ustring& xmlFile);
@@ -115,6 +115,9 @@ public:
   const Chord& GetChord(TimeDelta offset, const SongState& state) const;
 
   const Glib::ustring& GetName() const { return mName; };
+
+protected:
+  Tune();
 
 private:
   static NoteSequenceData sEmptyBar;

@@ -22,6 +22,12 @@
 NoteSequenceData Tune::sEmptyBar(TimeDelta::sBar);
 ChordSequenceData Tune::sEmptyChordBar(TimeDelta::sBar);
 
+TunePtr
+Tune::create()
+{
+  return TunePtr(new Tune);
+}
+
 Tune::Tune()
 {
   // TODO Auto-generated constructor stub

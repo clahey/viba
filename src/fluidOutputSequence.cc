@@ -21,6 +21,7 @@ OnCallback(unsigned int time,
 {
   FluidOutputSequence* sequence = static_cast<FluidOutputSequence*>(data);
   assert(sequence != NULL);
+  // Switches to the main loop thread.
   Glib::signal_idle().connect_once(sigc::bind(sigc::mem_fun(sequence, &FluidOutputSequence::OnCallback), time));
 }
 
@@ -28,16 +29,15 @@ FluidOutputSequence::FluidOutputSequence()
   : mSequencerBase(0),
     mTicksBase(0),
     mBPM(120),
-    mCallbackWaiting(false)
+    mCallbackWaiting(false),
+    mPaused(true)
 {
-    fluid_settings_t* settings;
-    settings = new_fluid_settings();
-    fluid_settings_setstr(settings, "synth.reverb.active", "yes");
-    fluid_settings_setstr(settings, "synth.chorus.active", "no");
-    fluid_settings_setstr(settings, "audio.driver", "pulseaudio");
-    mSynth = new_fluid_synth(settings);
-    mDriver = new_fluid_audio_driver(settings, mSynth);
-    mSequencer = new_fluid_sequencer2(FALSE);
+  mSettings = new_fluid_settings();
+  fluid_settings_setstr(mSettings, "synth.reverb.active", "yes");
+  fluid_settings_setstr(mSettings, "synth.chorus.active", "no");
+  fluid_settings_setstr(mSettings, "audio.driver", "pulseaudio");
+  mSynth = new_fluid_synth(mSettings);
+  mSequencer = new_fluid_sequencer2(FALSE);
 
     // register synth as first destination
     mSynthSeqID = fluid_sequencer_register_fluidsynth(mSequencer, mSynth);
@@ -59,14 +59,20 @@ FluidOutputSequence::FluidOutputSequence()
 FluidOutputSequence::~FluidOutputSequence()
 {
   delete_fluid_sequencer(mSequencer);
-  delete_fluid_audio_driver(mDriver);
+  if (mDriver != NULL) {
+    delete_fluid_audio_driver(mDriver);
+  }
   delete_fluid_synth(mSynth);
 }
 
 /* Returns true if successful */
 bool
-FluidOutputSequence::SendInstrumentEvent(InstrumentEvent* event)
+FluidOutputSequence::SendInstrumentEvent(InstrumentEventPtr event)
 {
+//  if (mPaused) {
+//    mEventQueue.insert(std::make_pair(event->GetOffset(), event));
+//    return true;
+//  } else {
     int fluid_res;
     fluid_event_t *evt = new_fluid_event();
     fluid_event_set_source(evt, -1);
@@ -87,6 +93,13 @@ FluidOutputSequence::SendInstrumentEvent(InstrumentEvent* event)
     }
     delete_fluid_event(evt);
     return true;
+    //  }
+}
+
+TimeDelta
+FluidOutputSequence::GetCurrentTime()
+{
+  return MSToTimeDelta(fluid_sequencer_get_tick(mSequencer));
 }
 
 void
@@ -99,7 +112,7 @@ FluidOutputSequence::ScheduleCallback(TimeDelta time, sigc::slot<void> callback)
 void
 FluidOutputSequence::ScheduleNextTimeout()
 {
-  if (!mCallbackMap.empty() && !mCallbackWaiting) {
+  if (!mPaused && !mCallbackMap.empty() && !mCallbackWaiting) {
     //    printf ("Scheduling Next Timeout for %d(%d)\n", TimeDeltaToMS(mCallbackMap.begin()->first), mCallbackMap.begin()->first.GetTicks());
     fluid_event_t *evt = new_fluid_event();
     fluid_event_set_source(evt, -1);
@@ -116,21 +129,86 @@ void
 FluidOutputSequence::OnCallback(unsigned int time)
 {
   //  printf("OnCallback: %d\n", time);
-  CallbackMap::iterator it = mCallbackMap.begin();
-  TimeDelta currentTime = MSToTimeDelta(time);
-  while (it != mCallbackMap.end() && it->first <= currentTime) {
-    it->second();
-    mCallbackMap.erase(it++);
+  if (!mPaused) {
+    CallbackMap::iterator it = mCallbackMap.begin();
+    TimeDelta currentTime = MSToTimeDelta(time);
+    while (it != mCallbackMap.end() && it->first <= currentTime) {
+      it->second();
+      mCallbackMap.erase(it++);
+    }
+    mCallbackWaiting = false;
+    ScheduleNextTimeout();
+  } else {
+    mCallbackWaiting = false;
   }
-  mCallbackWaiting = false;
+}
+
+void
+FluidOutputSequence::Clear()
+{
+  fluid_sequencer_remove_events(mSequencer, -1, mSynthSeqID, FLUID_SEQ_NOTEON);
+  fluid_sequencer_remove_events(mSequencer, -1, mSynthSeqID, FLUID_SEQ_NOTEOFF);
+}
+
+void
+FluidOutputSequence::Refill()
+{
+//  EventQueue queue;
+//  queue.swap(mEventQueue);
+//  EventQueue::const_iterator it = queue.begin(); //lower_bound(mTicksBase);
+//  for (; it != queue.end(); it++) {
+//    SendInstrumentEvent(it->second);
+//  }
+}
+
+void
+FluidOutputSequence::Quiet()
+{
+  delete_fluid_audio_driver(mDriver);
+  mDriver = NULL;
+}
+
+void
+FluidOutputSequence::Loud()
+{
+  mDriver = new_fluid_audio_driver(mSettings, mSynth);
+}
+
+void
+FluidOutputSequence::Play()
+{
+  if (!mPaused) {
+    return;
+  }
+  Loud();
+  //  mSequencerBase = fluid_sequencer_get_tick(mSequencer);
+  //  Refill();
+  mPaused = false;
   ScheduleNextTimeout();
+}
+
+void
+FluidOutputSequence::Pause()
+{
+  if (mPaused) {
+    return;
+  }
+  //  Clear();
+  Quiet();
+  //  mSequencerBase = fluid_sequencer_get_tick(mSequencer);
+  //  mTicksBase = MSToTimeDelta(mSequencerBase);
+  mPaused = true;
 }
 
 void
 FluidOutputSequence::SetBPM(double bpm)
 {
-  //  printf ("SetBPM(%f)\n", bpm);
+  //  Clear();
   mBPM = bpm;
+//  unsigned int base = fluid_sequencer_get_tick(mSequencer)
+//  mSequencerBase = base;
+//  mTicksBase = MSToTimeDelta(base);
+  //  Refill();
 }
 
 void

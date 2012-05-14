@@ -18,24 +18,26 @@
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/window.h>
 
-#include "fluidOutputSequence.hh"
-#include "timeMgr.hh"
-#include "pianist.hh"
-#include "fiddler.hh"
-#include "tune.hh"
 #include "gtk/timeline.hh"
+#include "fiddler.hh"
+#include "fluidOutputSequence.hh"
+#include "library.hh"
+#include "timeMgr.hh"
+#include "tune.hh"
+#include "pianist.hh"
 
 using namespace std;
 int main(int argc, char* argv[]) {
   Gtk::Main main(argc, argv);
 
-  Tune tune1;
-  tune1.Parse(argv[1]);
-  Tune tune2;
-  tune2.Parse(argv[2]);
+  LocalLibrary library;
+  library.Load();
   SongState::TuneList tunes;
-  tunes.push_back(SongState::TuneChange(&tune1, 2));
-  tunes.push_back(SongState::TuneChange(&tune2, 2));
+  const Library::TuneList& libraryList = library.GetTunes();
+  for (Library::TuneList::const_iterator it = libraryList.begin(); it != libraryList.end(); it++) {
+    Library::TuneInfoPtr info = *it;
+    tunes.push_back(SongState::TuneChange(info->tune, 2));
+  }
 
   FluidOutputSequence* output = new FluidOutputSequence;
   Instrument* instrument = new Instrument(0);
@@ -48,7 +50,7 @@ int main(int argc, char* argv[]) {
   timeMgr->AttachGenerator(fiddler, outputId);
   timeMgr->SetOutput(outputId);
   timeMgr->mSongState.pTunes = tunes;
-  timeMgr->Start();
+  timeMgr->Ready();
   timeMgr->mSongState.pVolume.AddRange(timeMgr->mSongState.mRepeatStart,
 				       timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * TimeDelta::sBarsPerChange,
 				       .2);
@@ -58,11 +60,14 @@ int main(int argc, char* argv[]) {
 
   Gtk::Window* window = new Gtk::Window();
   Gtk::VBox* vbox = Gtk::manage(new Gtk::VBox());
+  Gtk::HBox* hbox = Gtk::manage(new Gtk::HBox());
   Gtk::Widget* timeline =
     Gtk::manage(new Timeline(output, &timeMgr->mSongState));
   Gtk::ScrolledWindow* scrolled = Gtk::manage(new Gtk::ScrolledWindow());
   scrolled->set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
   timeline->set_size_request(250, 100);
+  Gtk::Button* playButton = Gtk::manage(new Gtk::Button("Play"));
+  playButton->signal_clicked().connect(sigc::mem_fun(timeMgr, &TimeMgr::Play));
   Gtk::SpinButton* spinbutton = Gtk::manage(new Gtk::SpinButton());
   Gtk::Adjustment* adjustment = spinbutton->get_adjustment();
   adjustment->set_lower(10);
@@ -75,16 +80,22 @@ int main(int argc, char* argv[]) {
 
   scrolled->add(*timeline);
   vbox->pack_start(*scrolled, Gtk::PACK_EXPAND_WIDGET);
-  vbox->pack_start(*spinbutton, Gtk::PACK_SHRINK);
+  vbox->pack_start(*hbox, Gtk::PACK_SHRINK);
+  hbox->pack_start(*spinbutton, Gtk::PACK_SHRINK);
+  hbox->pack_start(*playButton, Gtk::PACK_SHRINK);
 
   window->add(*vbox);
-  vbox->show();
-  scrolled->show();
-  timeline->show();
   spinbutton->show();
+  playButton->show();
+  hbox->show();
+  timeline->show();
+  scrolled->show();
+  vbox->show();
   window->show();
 
   //  output->ScheduleCallback(timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * 32, sigc::mem_fun(loop.operator->(), &Glib::MainLoop::quit));
+
+  //  timeMgr->Play();
 
   main.run(*window);
 

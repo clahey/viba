@@ -8,9 +8,18 @@
 #ifndef TYPES_HH_
 #define TYPES_HH_
 
-struct SongState;
+#include "referencePtr.hh"
+
 struct BarData;
-struct OutputSequence;
-struct Tune;
+struct SongState;
+
+class Library;
+class OutputSequence;
+class FluidOutputSequence;
+class Tune;
+class InstrumentEvent;
+
+typedef ReferencePtr<Tune> TunePtr;
+typedef ReferencePtr<InstrumentEvent> InstrumentEventPtr;
 
 #endif /* TYPES_HH_ */

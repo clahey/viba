@@ -51,13 +51,7 @@ class VariableProperty
 {
 public:
   virtual const T& Get(TimeDelta time) const = 0;
-  virtual ~VariableProperty() {}
-
-  sigc::signal<void> changed;
-
-protected:
-  // Can't be copied or created directly.
-  VariableProperty() {}
+  virtual ~VariableProperty() {};
 };
 
 template<class T>
@@ -84,12 +78,14 @@ public:
   void SetInitialValue(const T& initial);
 
   void AddRange(const Range& range);
-  void AddRange(TimeDelta startTime, TimeDelta endTime, const T& value);
+  void AddRange(TimeDelta startTime, TimeDelta endTime, const T& endValue);
 
   iterator begin() { return mRangeList.begin(); }
   const_iterator begin() const { return mRangeList.begin(); }
   iterator end() { return mRangeList.end(); }
   const_iterator end() const { return mRangeList.end(); }
+
+  sigc::signal<void> changed;
 
 private:
   typedef std::map<TimeDelta, T> ValueCache;
@@ -134,6 +130,7 @@ const T&
 InterpolatedProperty<T>::Get(TimeDelta time)
   const
 {
+  // XXX: Optimize me!
   if (mValueCache.find(time) == mValueCache.end()) {
     T value = mInitialValue;
     iterator activeRange = end();
@@ -160,7 +157,11 @@ InterpolatedProperty<T>::CalculateValue(iterator it,
   if (it == mRangeList.end()) {
     return initialValue;
   }
-  // This comes before the check for start value; if endTime == startTime, we want the endValue.
+
+  /*
+   * if endTime == startTime, we want the endValue.  Therefore this
+   * needs to come before the check for start value.
+   */
   if (time >= it->endTime) {
     return it->endValue;
   }
@@ -181,6 +182,7 @@ InterpolatedProperty<T>::SetInitialValue(const T& initial)
 {
   mValueCache.clear();
   mInitialValue = initial;
+  changed.emit();
 }
 
 template<class T>
@@ -188,9 +190,10 @@ void
 InterpolatedProperty<T>::AddRange(const Range& range)
 {
   mValueCache.clear();
-  // Remove any old ranges.
+  // Remove any old changes over the same range.
   mRangeList.erase(range);
   mRangeList.insert(range);
+  changed.emit();
 }
 
 template<class T>

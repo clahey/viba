@@ -7,16 +7,18 @@
 
 #include "musician.hh"
 
+#include "fluidOutputSequence.hh"
+
 void
 Musician::GenerateBar(const BarData& bar, FluidOutputSequence* outputSequence, const SongState& state)
 {
-  std::vector<InstrumentEvent> output;
+  std::vector<InstrumentEventPtr> output;
   FillOutput(output, bar, state);
-  for (std::vector<InstrumentEvent>::iterator it = output.begin(); it != output.end(); it++) {
-    InstrumentEvent& event = *it;
-    if (event.GetOffset() >= bar.mStart + bar.mOffset && event.GetOffset() < bar.mEnd + bar.mOffset) {
-      event.Randomize(1.0/512);
-      outputSequence->SendInstrumentEvent(&event);
+  for (std::vector<InstrumentEventPtr>::iterator it = output.begin(); it != output.end(); it++) {
+    InstrumentEventPtr& event = *it;
+    if (event->GetOffset() >= bar.mStart + bar.mOffset && event->GetOffset() < bar.mEnd + bar.mOffset) {
+      event->Randomize(1.0/512);
+      outputSequence->SendInstrumentEvent(event);
     }
   }
 }

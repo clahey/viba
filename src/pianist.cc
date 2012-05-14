@@ -10,7 +10,7 @@
 #include "tune.hh"
 
 void
-Pianist::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, const SongState& state)
+Pianist::FillOutput(std::vector<InstrumentEventPtr>& output, const BarData& bar, const SongState& state)
 {
   if (mPlayMelody) {
     const NoteSequenceData& noteData = bar.mTune->GetNotes(bar, state);
@@ -28,7 +28,7 @@ Pianist::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, co
 	}
       }
       vel *= state.pVolume.Get(bar.mStart + bar.mOffset + noteEvent.GetOffset());
-      output.push_back(InstrumentEvent(noteEvent, bar.mOffset, mInstrument, vel));
+      output.push_back(InstrumentEvent::create(noteEvent, bar.mOffset, mInstrument, vel));
     }
   }
 
@@ -49,16 +49,16 @@ Pianist::FillOutput(std::vector<InstrumentEvent>& output, const BarData& bar, co
       const Chord& chord = bar.mTune->GetChord(offset + TimeDelta::sBar * bar.mBarNum, state);
       if (i % 2 == 0) {
 	if (i % 4 == 0 || chord != bar.mTune->GetChord(TimeDelta::sBar * bar.mBarNum, state)) {
-	  output.push_back(InstrumentEvent(chord.GetBase(octave), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
-	  output.push_back(InstrumentEvent(chord.GetBase(octave + 12), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
+	  output.push_back(InstrumentEvent::create(chord.GetBase(octave), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
+	  output.push_back(InstrumentEvent::create(chord.GetBase(octave + 12), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
 	} else {
-	  output.push_back(InstrumentEvent(chord.GetFifth(octave), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
-	  output.push_back(InstrumentEvent(chord.GetFifth(octave + 12), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
+	  output.push_back(InstrumentEvent::create(chord.GetFifth(octave), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
+	  output.push_back(InstrumentEvent::create(chord.GetFifth(octave + 12), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
 	}
       } else {
-	output.push_back(InstrumentEvent(chord.GetBase(octave + 24), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
-	output.push_back(InstrumentEvent(chord.GetThird(octave + 24), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
-	output.push_back(InstrumentEvent(chord.GetFifth(octave + 24), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
+	output.push_back(InstrumentEvent::create(chord.GetBase(octave + 24), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
+	output.push_back(InstrumentEvent::create(chord.GetThird(octave + 24), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
+	output.push_back(InstrumentEvent::create(chord.GetFifth(octave + 24), TimeDelta::sBar / 4, offset + bar.mOffset, mInstrument, vel));
       }
     }
   }

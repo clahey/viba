@@ -18,6 +18,7 @@ CurrentTimeItem::CurrentTimeItem(OutputSequence* output)
   : Polyline(0, 0, 0, 0),
     mOutput(output)
 {
+  property_stroke_color() = "red";
   SetPosition();
 }
 

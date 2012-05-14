@@ -28,11 +28,11 @@ public:
   FluidOutputSequence();
   ~FluidOutputSequence();
   TimeDelta GetLength() const { return 0; };
-  TimeDelta GetCurrentTime() { return MSToTimeDelta(fluid_sequencer_get_tick(mSequencer)); };
+  TimeDelta GetCurrentTime();
   void ScheduleCallback(TimeDelta offset, sigc::slot<void> callback);
 
   // New methods
-  bool SendInstrumentEvent(InstrumentEvent* event);
+  bool SendInstrumentEvent(InstrumentEventPtr event);
 
   // For internal use from C code.
   void OnCallback(unsigned int time);
@@ -41,7 +41,12 @@ public:
   virtual double GetBPM() { return mBPM; };
   virtual void SetPivot(TimeDelta pivot);
 
+  void Play();
+  void Pause();
+
 private:
+  typedef std::multimap<TimeDelta, InstrumentEventPtr> EventQueue;
+
   FluidOutputSequence(const FluidOutputSequence& other) {};
   static const int sSPerM = 60;
   static const int sMSPerS = 1000;
@@ -56,7 +61,12 @@ private:
     return static_cast<unsigned int>((time_offset / TimeDelta::sBar) / mBPM * (sSPerM * sMSPerS * sBeatsPerBar)) + mSequencerBase;
   };
   void ScheduleNextTimeout();
+  void Clear();
+  void Refill();
+  void Quiet();
+  void Loud();
 
+  fluid_settings_t* mSettings;
   fluid_sequencer_t* mSequencer;
   fluid_synth_t* mSynth;
   fluid_audio_driver_t* mDriver;
@@ -68,6 +78,8 @@ private:
   typedef std::multimap<TimeDelta, sigc::slot<void> > CallbackMap;
   CallbackMap mCallbackMap;
   bool mCallbackWaiting;
+  bool mPaused;
+  EventQueue mEventQueue;
 };
 
 #endif /* OUTPUTSEQUENCE_HH_ */

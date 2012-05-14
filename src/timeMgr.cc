@@ -85,11 +85,25 @@ TimeMgr::FillSequences()
 }
 
 void
-TimeMgr::Start()
+TimeMgr::Ready()
 {
   assert(mOutput != sInvalid);
   assert(!mSongState.pTunes.Get().empty());
   mSongState.mTuneStart = mOutputSequence->GetCurrentTime();
   mSongState.mRepeatStart = mSongState.mTuneStart + mSongState.pTunes.Get().front().tune->GetIntro().GetLength();
   FillSequences();
+}
+
+void
+TimeMgr::Play()
+{
+  assert(mOutput != sInvalid);
+  mOutputSequence->Play();
+}
+
+void
+TimeMgr::Pause()
+{
+  assert(mOutput != sInvalid);
+  mOutputSequence->Pause();
 }

@@ -17,7 +17,7 @@
 
 struct BarData {
   BarData(int barNum, TimeDelta offset, TimeDelta start, TimeDelta end,
-	  Tune* tune, bool lastTime)
+	  TunePtr tune, bool lastTime)
     : mBarNum(barNum),
       mOffset(offset),
       mStart(start),
@@ -30,7 +30,7 @@ struct BarData {
   TimeDelta mOffset;
   TimeDelta mStart;
   TimeDelta mEnd;
-  Tune* mTune;
+  TunePtr mTune;
   bool mLastTime;
 };
 
@@ -68,11 +68,11 @@ struct SongState
 
   struct TuneChange
   {
-    TuneChange(Tune* tune, int repeatCount)
+    TuneChange(TunePtr tune, int repeatCount)
       : tune(tune),
 	repeatCount(repeatCount) {};
 
-    Tune* tune;
+    TunePtr tune;
     int repeatCount;
 
     bool operator==(const TuneChange& other) const {

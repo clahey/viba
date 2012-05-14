@@ -60,6 +60,10 @@ ChangeMarkers::Build()
   }
   AddLine(Constants::TimeDeltaToPixels(delta));
   pWidth = Constants::TimeDeltaToPixels(delta) + 6;
+
+  for (ItemVector::iterator it = mItemVector.begin(); it != mItemVector.end(); it++) {
+    (*it)->raise();
+  }
 }
 
 void
