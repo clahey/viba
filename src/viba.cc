@@ -51,12 +51,12 @@ int main(int argc, char* argv[]) {
   timeMgr->SetOutput(outputId);
   timeMgr->mSongState.pTunes = tunes;
   timeMgr->Ready();
-  timeMgr->mSongState.pVolume.AddRange(timeMgr->mSongState.mRepeatStart,
-				       timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * TimeDelta::sBarsPerChange,
-				       .2);
-  timeMgr->mSongState.pVolume.AddRange(timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * TimeDelta::sBarsPerChange,
-				       timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * TimeDelta::sBarsPerChange * 2,
-				       1);
+  //  timeMgr->mSongState.pVolume.AddRange(timeMgr->mSongState.mRepeatStart,
+  //  timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * TimeDelta::sBarsPerChange,
+  //  .2);
+  //  timeMgr->mSongState.pVolume.AddRange(timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * TimeDelta::sBarsPerChange,
+  //				       timeMgr->mSongState.mRepeatStart + TimeDelta::sBar * TimeDelta::sBarsPerChange * 2,
+  //				       1);
 
   Gtk::Window* window = new Gtk::Window();
   Gtk::VBox* vbox = Gtk::manage(new Gtk::VBox());
