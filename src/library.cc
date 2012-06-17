@@ -7,7 +7,8 @@
 
 #include "library.hh"
 
-#include "tune.hh"
+#include "tuneMusicXML.hh"
+#include "tuneLy.hh"
 
 LocalLibrary::LocalLibrary()
 {
@@ -58,15 +59,24 @@ LocalLibrary::LoadTune(const Glib::ustring& filename)
   if (mTuneMap.find(key) != mTuneMap.end()) {
     return "";
   }
-  TunePtr tune = Tune::create();
-  tune->Parse(filename);
-  AddTune(key, tune);
-  return key;
+  TunePtr tune = TuneMusicXML::create();
+  if (tune->Parse(filename)) {
+    AddTune(key, tune);
+    return key;
+  } else {
+    TunePtr tune = TuneLy::create();
+    if (tune->Parse(filename)) {
+      AddTune(key, tune);
+      return key;
+    } else {
+      return "";
+    }
+  }
 }
 
 void
 LocalLibrary::Load()
 {
-  LoadTune("/home/clahey/Dropbox/HommageAEdmondParizeau.xml");
-  LoadTune("/home/clahey/Dropbox/HuntingTheBuffalo.xml");
+  LoadTune("banksoftheallan.xml");
+  LoadTune("banshee.xml");
 }

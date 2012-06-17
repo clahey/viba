@@ -18,6 +18,8 @@ viba_SOURCES=viba.cc \
 	timeDelta.cc \
 	timeMgr.cc \
 	tune.cc \
+	tuneLy.cc \
+	tuneMusicXML.cc \
 	gtk/changeMarkers.cc \
 	gtk/changeMark.cc \
 	gtk/constants.cc \

@@ -90,7 +90,7 @@ TimeMgr::Ready()
   assert(mOutput != sInvalid);
   assert(!mSongState.pTunes.Get().empty());
   mSongState.mTuneStart = mOutputSequence->GetCurrentTime();
-  mSongState.mRepeatStart = mSongState.mTuneStart + mSongState.pTunes.Get().front().tune->GetIntro().GetLength();
+  mSongState.mRepeatStart = mSongState.mTuneStart + mSongState.pTunes.Get().front().tune->GetIntroLength();
   FillSequences();
 }
 
