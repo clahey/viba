@@ -17,6 +17,7 @@
 class NoteEvent
 {
 public:
+  NoteEvent() : mNote(), mLength(0), mOffset(0) {};
   NoteEvent(Note note, TimeDelta length, TimeDelta offset) : mNote(note), mLength(length), mOffset(offset) {};
   NoteEvent(NoteEvent event, TimeDelta offset) : mNote(event.mNote), mLength(event.mLength), mOffset(event.mOffset + offset) {};
 
