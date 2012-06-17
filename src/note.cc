@@ -16,14 +16,23 @@ const int Note::sFlat;
 
 static int sOffset[] = { 0, 2, 4, 5, 7, 9, 11 };
 
-Note::Note(int octave, char note, int accidental)
+const int
+Note::GetOffset(char note)
 {
   int step = tolower(note) - 'a';
-  assert(step >= 0 && step < 7);
+  if(step < 0 || step > 6) {
+    return -1;
+  }
   // Octaves start at c.
-  step = (step - 2) % 7;
-  mMidiNote = (octave + 1) * 12;
-  mMidiNote += sOffset[step];
-  mMidiNote += accidental;
+  step = (step + 5) % 7;
+
+  return sOffset[step];
+}
+
+Note::Note(int octave, char note, int accidental)
+{
+  int offset = GetOffset(note);
+  assert(offset != -1);
+  mMidiNote = (octave + 1) * 12 + offset + accidental;
 }
 
