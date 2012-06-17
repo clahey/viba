@@ -80,6 +80,7 @@ FluidOutputSequence::SendInstrumentEvent(InstrumentEventPtr event)
     fluid_event_noteon(evt, event->GetInstrument()->GetChannel(), event->GetNote().GetMidiNote(), event->GetVelocity());
     fluid_res = fluid_sequencer_send_at(mSequencer, evt, TimeDeltaToMS(event->GetOffset()), TRUE);
     //    printf("Note %d starts at %d (%d)\n", event->GetNote().GetMidiNote(), TimeDeltaToMS(event->GetOffset()), event->GetOffset().GetTicks());
+    //    printf("Note %d plays at %f for %f\n", event->GetNote().GetMidiNote(), event->GetOffset() / TimeDelta::sBar, event->GetLength() / TimeDelta::sBar);
     if (fluid_res == FLUID_FAILED) {
       delete_fluid_event(evt);
       return false;
