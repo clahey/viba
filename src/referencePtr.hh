@@ -9,6 +9,7 @@
 #define REFERENCE_PTR_HH_
 
 #include <map>
+#include <algorithm>
 
 template<class T>
 class ReferencePtr
@@ -73,6 +74,23 @@ public:
     const
   {
     return mBase < other.mBase;
+  }
+
+  bool operator!()
+    const
+  {
+    return mBase == NULL;
+  }
+
+  operator bool()
+    const
+  {
+    return mBase != NULL;
+  }
+
+  void swap(ReferencePtr<T>& other)
+  {
+    std::swap(mBase, other.mBase);
   }
 
 private:
