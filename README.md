@@ -16,8 +16,3 @@ To try it out, install a bunch of packages on your machine (I'll make
 a list of packages soon.  An important one is fluid-soundfont-gm.)
 Then run the standard autoreconf, configure, make series and run
 src/viba.
-
-Currently known bugs
-====================
-
-Every so often, a note in the melody seems to be skipped.
