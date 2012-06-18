@@ -77,5 +77,25 @@ Pianist::FillOutput(std::vector<InstrumentEventPtr>& output, const BarData& bar,
 	output.push_back(InstrumentEvent::create(chord.GetFifth(octave + 24), duration, offset + bar.mOffset, mInstrument, vel));
       }
     }
+  } else {
+    if (bar.mEnd - bar.mStart == TimeDelta::sBar * 2) {
+      int i;
+      for (i = 0; i < 4; i++) {
+	TimeDelta offset;
+	TimeDelta duration;
+	offset = TimeDelta::sBar * i / 2;
+	duration = TimeDelta::sBar / 4;
+	
+	Note octave(36);
+	int vel = 105;
+
+	vel *= state.pVolume.Get(bar.mStart + bar.mOffset + offset);
+	const Chord& chord = bar.mTune->GetChord(offset + TimeDelta::sBar * bar.mBarNum, state);
+	output.push_back(InstrumentEvent::create(chord.GetBase(octave + 12), duration, offset + bar.mOffset, mInstrument, vel));
+	output.push_back(InstrumentEvent::create(chord.GetBase(octave + 24), duration, offset + bar.mOffset, mInstrument, vel));
+	output.push_back(InstrumentEvent::create(chord.GetThird(octave + 24), duration, offset + bar.mOffset, mInstrument, vel));
+	output.push_back(InstrumentEvent::create(chord.GetFifth(octave + 24), duration, offset + bar.mOffset, mInstrument, vel));
+      }
+    }
   }
 }
