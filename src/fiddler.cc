@@ -30,7 +30,6 @@ Fiddler::FillOutput(std::vector<InstrumentEventPtr>& output, const BarData& bar,
 #endif
     vel *= state.pVolume.Get(bar.mStart + bar.mOffset + noteEvent.GetOffset());
     InstrumentEventPtr event = InstrumentEvent::create(noteEvent, bar.mOffset, mInstrument, vel);
-    event->Shorten(TimeDelta::sBar / 512);
     output.push_back(event);
   }
 }

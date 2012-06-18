@@ -10,6 +10,7 @@
 
 #include "note.hh"
 #include "timeDelta.hh"
+#include <algorithm>
 
 /*
  *

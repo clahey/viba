@@ -13,6 +13,7 @@ viba_SOURCES=viba.cc \
 	musician.cc \
 	note.cc \
 	pianist.cc \
+	random.cc \
 	sequenceData.cc \
 	songState.cc \
 	timeDelta.cc \

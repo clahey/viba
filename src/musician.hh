@@ -26,7 +26,14 @@ protected:
   virtual void FillOutput(std::vector<InstrumentEventPtr>& output, const BarData& bar, const SongState& state) = 0;
 
 private:
+  typedef std::pair<TimeDelta, TimeDelta> TimeSlip; // first = offset, second = gap
+  typedef std::map<TimeDelta, TimeSlip> TimeSlipMap;
+
   void GenerateBar(const BarData& bar, FluidOutputSequence* output, const SongState& state);
+  const TimeSlip& GetTimeSlip(TimeDelta time) const;
+  void CleanTimeSlipMap(TimeDelta time);
+
+  mutable TimeSlipMap mTimeSlipMap;
 };
 
 #endif /* MUSICIAN_HH_ */
