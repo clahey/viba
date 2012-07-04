@@ -26,7 +26,7 @@ Musician::GenerateBar(const BarData& bar, FluidOutputSequence* outputSequence, c
       TimeDelta endDelay = TimeDelta::sBar * GetNormalDistribution(1.0 / 2048, 0);
       event->SetOffset(event->GetOffset() + startSlip.first + startDelay);
       // Move the end by the end slip offset and subtract the end slip gap.
-      event->SetLength(event->GetLength() - startSlip.first - startDelay
+      event->SetLength(event->GetLength()/2 - startSlip.first - startDelay
 		       + endSlip.first - endSlip.second - endDelay);
       outputSequence->SendInstrumentEvent(event);
     }
