@@ -28,8 +28,11 @@ Fiddler::FillOutput(std::vector<InstrumentEventPtr>& output, const BarData& bar,
       }
     }
 #endif
-    vel *= state.pVolume.Get(bar.mStart + bar.mOffset + noteEvent.GetOffset());
-    InstrumentEventPtr event = InstrumentEvent::create(noteEvent, bar.mOffset, mInstrument, vel);
+
+    TimeDelta offset = bar.mOffset + noteEvent.GetOffset();
+    TimeDelta duration = noteEvent.GetLength()/2;
+    vel *= state.pVolume.Get(bar.mStart + offset);
+      InstrumentEventPtr event = InstrumentEvent::create(noteEvent.GetNote(), duration, offset, mInstrument, vel);
     output.push_back(event);
   }
 }
