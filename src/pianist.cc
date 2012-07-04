@@ -39,14 +39,14 @@ Pianist::FillOutput(std::vector<InstrumentEventPtr>& output, const BarData& bar,
       TimeDelta duration;
       if (bar.mTune->GetType() == Tune::REEL) {
 	offset = TimeDelta::sBar * i / 4;
-	duration = TimeDelta::sBar / 8;
+	duration = TimeDelta::sBar / 16;
       } else if (bar.mTune->GetType() == Tune::JIG) {
 	if (i % 2 == 0) {
 	  offset = TimeDelta::sBar * (i / 2) / 2;
-	  duration = TimeDelta::sBar / 6;
+	  duration = TimeDelta::sBar / 12;
 	} else {
 	  offset = TimeDelta::sBar * (i / 2) / 2 + TimeDelta::sBar / 3;
-	  duration = TimeDelta::sBar / 12;
+	  duration = TimeDelta::sBar / 24;
 	}
       }
 	
@@ -84,7 +84,7 @@ Pianist::FillOutput(std::vector<InstrumentEventPtr>& output, const BarData& bar,
 	TimeDelta offset;
 	TimeDelta duration;
 	offset = TimeDelta::sBar * i / 2;
-	duration = TimeDelta::sBar / 4;
+	duration = TimeDelta::sBar / 12;
 	
 	Note octave(36);
 	int vel = 105;
